@@ -17,6 +17,7 @@ const Header = () => {
 
   const selectedLedger = useRootStore(RootStoreSelector.selectSelectedLedger);
   const ledgerList = useRootStore(RootStoreSelector.selectLedgerList);
+  const {selectLedger} = useRootStore();
 
   const [visible, setVisible] = useState(false);
 
@@ -28,6 +29,16 @@ const Header = () => {
     navigation.navigate('AddLedger');
     // onToggleModal();
   }, []);
+
+  const onSelectLedger = useCallback(
+    (id: number) => () => {
+      if (selectedLedger?.id === id) return;
+
+      selectLedger(id);
+      onToggleModal();
+    },
+    [selectLedger, selectedLedger],
+  );
 
   return (
     <View style={styles.container}>
@@ -49,10 +60,19 @@ const Header = () => {
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               {ledgerList?.map(ledger => {
+                const active = selectedLedger?.id === ledger?.id;
                 return (
-                  <TouchableOpacity key={ledger?.id} style={styles.ledgerItem}>
+                  <TouchableOpacity
+                    key={ledger?.id}
+                    style={styles.ledgerItem}
+                    onPress={onSelectLedger(ledger?.id)}>
                     <View style={styles.ledgerItemLeft}>
-                      <View style={styles.ledgerItemLeftActive} />
+                      <View
+                        style={[
+                          styles.ledgerItemLeftActive,
+                          !active && styles.ledgerItemLeftInActive,
+                        ]}
+                      />
                       <Icon
                         name={'pay-circle1'}
                         size={14}
@@ -126,7 +146,7 @@ const styles = StyleSheet.create({
   },
   ledgerItemLeftActive: {
     width: 2,
-    height: 10,
+    height: 15,
     backgroundColor: 'limegreen',
     marginRight: 10,
   },

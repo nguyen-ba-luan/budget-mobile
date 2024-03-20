@@ -1,6 +1,7 @@
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {createJSONStorage, persist} from 'zustand/middleware';
 import {defaultLedgerJson, ILedger} from '../constant';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface StoreState {
   selectedLedgerId: number;
@@ -23,7 +24,7 @@ export const useRootStore = create<StoreState>()(
   persist(
     (set, get) => ({
       selectedLedgerId: 1,
-      ledgerIdList: [1],
+      ledgerIdList: [1, 2],
       ledgerJson: defaultLedgerJson,
       selectLedger: id =>
         set(() => ({
@@ -40,6 +41,8 @@ export const useRootStore = create<StoreState>()(
     }),
     {
       name: 'root-storage',
+      version: 1,
+      storage: createJSONStorage(() => AsyncStorage),
     },
   ),
 );

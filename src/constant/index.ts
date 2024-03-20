@@ -97,4 +97,30 @@ export const defaultLedgerJson = {
       },
     ],
   },
+  2: {
+    id: 2,
+    color: '#ff2f22',
+    currency: CURRENCY[1],
+    icon: 'icon',
+    name: 'Chi tiêu 2',
+    categories: [
+      {
+        id: 1,
+        color: '#f3f3f3',
+        icon: 'icon',
+        name: 'Gia đình',
+        budget: {
+          amount: 150000,
+          period: PeriodType.MONTHLY,
+        },
+        subCategories: [
+          {
+            id: 1,
+            name: 'Tiền nhà',
+          },
+        ],
+        type: LedgerCategoryType.EXPENSES,
+      },
+    ],
+  },
 };
