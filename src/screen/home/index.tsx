@@ -1,11 +1,12 @@
 import {StyleSheet, View} from 'react-native';
 import React from 'react';
-import {Header} from './_components';
+import {CategoryList, Header} from './_components';
 
 const Home = () => {
   return (
     <View style={styles.container}>
       <Header />
+      <CategoryList />
     </View>
   );
 };

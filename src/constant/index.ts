@@ -16,7 +16,7 @@ export enum PeriodType {
 export const CURRENCY = {
   1: {
     id: 1,
-    symbol: 'đ',
+    symbol: '₫',
     name: 'VNĐ',
   },
 };
@@ -95,6 +95,23 @@ export const defaultLedgerJson = {
         ],
         type: LedgerCategoryType.EXPENSES,
       },
+      {
+        id: 2,
+        color: '#f3f3f3',
+        icon: 'icon',
+        name: 'Cá nhân',
+        budget: {
+          amount: 150000,
+          period: PeriodType.MONTHLY,
+        },
+        subCategories: [
+          {
+            id: 1,
+            name: 'Tiền nhà',
+          },
+        ],
+        type: LedgerCategoryType.EXPENSES,
+      },
     ],
   },
   2: {
@@ -105,18 +122,18 @@ export const defaultLedgerJson = {
     name: 'Chi tiêu 2',
     categories: [
       {
-        id: 1,
+        id: 3,
         color: '#f3f3f3',
         icon: 'icon',
-        name: 'Gia đình',
+        name: 'Gia đình 2',
         budget: {
           amount: 150000,
           period: PeriodType.MONTHLY,
         },
         subCategories: [
           {
-            id: 1,
-            name: 'Tiền nhà',
+            id: 4,
+            name: 'Tiền nhà 2',
           },
         ],
         type: LedgerCategoryType.EXPENSES,

@@ -5,7 +5,7 @@ import HomeScreen from '../screen/home';
 import AddTransaction from '../screen/add-transaction';
 import AddLedger from '../screen/add-ledger';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function AppNavigation() {
   return (
@@ -15,7 +15,13 @@ function AppNavigation() {
           headerShown: false,
         }}>
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="AddTransaction" component={AddTransaction} />
+        <Stack.Screen
+          options={{
+            presentation: 'formSheet',
+          }}
+          name="AddTransaction"
+          component={AddTransaction}
+        />
         <Stack.Screen
           options={{
             presentation: 'formSheet',
@@ -29,3 +35,9 @@ function AppNavigation() {
 }
 
 export default AppNavigation;
+
+export type RootStackParamList = {
+  Home: undefined;
+  AddLedger: undefined;
+  AddTransaction: {ledgerId: number; categoryId: number};
+};
