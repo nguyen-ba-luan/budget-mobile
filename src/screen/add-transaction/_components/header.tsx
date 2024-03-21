@@ -1,6 +1,6 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {memo} from 'react';
-import {RootStoreSelector, useRootStore} from '../../../store';
+import {LedgerSelector, useRootStore} from '../../../store';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -14,7 +14,7 @@ const Header = () => {
   const {categoryId, ledgerId} = route.params;
 
   const selectedCategory = useRootStore(
-    RootStoreSelector.selectLedgerCategory(ledgerId, categoryId),
+    LedgerSelector.selectLedgerCategory(ledgerId, categoryId),
   );
 
   return (

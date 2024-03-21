@@ -1,6 +1,6 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {memo, useCallback} from 'react';
-import {RootStoreSelector, useRootStore} from '../../../store';
+import {LedgerSelector, useRootStore} from '../../../store';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {RootStackParamList} from '../../../navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -18,7 +18,7 @@ const SubCategory = (props: IProps) => {
   const {categoryId, ledgerId} = route.params;
 
   const selectedCategory = useRootStore(
-    RootStoreSelector.selectLedgerCategory(ledgerId, categoryId),
+    LedgerSelector.selectLedgerCategory(ledgerId, categoryId),
   );
 
   const onPress = useCallback(

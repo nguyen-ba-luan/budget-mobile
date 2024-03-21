@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import React, {memo, useCallback, useState} from 'react';
-import {RootStoreSelector, useRootStore} from '../../../store';
+import {LedgerSelector, useRootStore} from '../../../store';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
@@ -15,8 +15,8 @@ import {useNavigation} from '@react-navigation/native';
 const Header = () => {
   const navigation = useNavigation<any>();
 
-  const selectedLedger = useRootStore(RootStoreSelector.selectSelectedLedger);
-  const ledgerList = useRootStore(RootStoreSelector.selectLedgerList);
+  const selectedLedger = useRootStore(LedgerSelector.selectSelectedLedger);
+  const ledgerList = useRootStore(LedgerSelector.selectLedgerList);
   const {selectLedger} = useRootStore();
 
   const [visible, setVisible] = useState(false);
@@ -27,7 +27,6 @@ const Header = () => {
 
   const onAddLedger = useCallback(() => {
     navigation.navigate('AddLedger');
-    // onToggleModal();
   }, []);
 
   const onSelectLedger = useCallback(

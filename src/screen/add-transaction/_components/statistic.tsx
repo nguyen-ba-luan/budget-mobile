@@ -1,9 +1,9 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React, {memo} from 'react';
-import {RootStoreSelector, useRootStore} from '../../../store';
+import {LedgerSelector, useRootStore} from '../../../store';
 
 const Statistic = () => {
-  const selectedLedger = useRootStore(RootStoreSelector.selectSelectedLedger);
+  const selectedLedger = useRootStore(LedgerSelector.selectSelectedLedger);
   const price = 931000;
 
   return (

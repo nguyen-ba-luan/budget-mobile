@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import React, {memo, useCallback, useState} from 'react';
-import {RootStoreSelector, useRootStore} from '../../../store';
+import {LedgerSelector, useRootStore} from '../../../store';
 import {useNavigation} from '@react-navigation/native';
 import {Metrics} from '../../../theme/metric';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -20,7 +20,7 @@ const CategoryList = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const selectedLedger = useRootStore(RootStoreSelector.selectSelectedLedger);
+  const selectedLedger = useRootStore(LedgerSelector.selectSelectedLedger);
 
   const categories = selectedLedger?.categories;
 
@@ -39,11 +39,15 @@ const CategoryList = () => {
   const sections = [
     {
       type: LedgerCategoryType.EXPENSES,
-      categories: categories,
+      categories: categories?.filter(
+        item => item?.type === LedgerCategoryType.EXPENSES,
+      ),
     },
     {
       type: LedgerCategoryType.INCOME,
-      categories: categories,
+      categories: categories?.filter(
+        item => item?.type === LedgerCategoryType.INCOME,
+      ),
     },
   ];
 

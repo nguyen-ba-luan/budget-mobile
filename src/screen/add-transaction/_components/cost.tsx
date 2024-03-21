@@ -1,6 +1,6 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React, {memo} from 'react';
-import {RootStoreSelector, useRootStore} from '../../../store';
+import {LedgerSelector, useRootStore} from '../../../store';
 
 interface IProps {
   cost: number;
@@ -8,7 +8,7 @@ interface IProps {
 
 const Cost = (props: IProps) => {
   const {cost} = props;
-  const selectedLedger = useRootStore(RootStoreSelector.selectSelectedLedger);
+  const selectedLedger = useRootStore(LedgerSelector.selectSelectedLedger);
 
   return (
     <View style={styles.container}>
