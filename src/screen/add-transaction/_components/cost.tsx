@@ -2,25 +2,31 @@ import {StyleSheet, Text, View} from 'react-native';
 import React, {memo} from 'react';
 import {RootStoreSelector, useRootStore} from '../../../store';
 
-const Amount = () => {
+interface IProps {
+  cost: number;
+}
+
+const Cost = (props: IProps) => {
+  const {cost} = props;
   const selectedLedger = useRootStore(RootStoreSelector.selectSelectedLedger);
-  const price = 50000000;
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{`${
         selectedLedger?.currency?.symbol
-      }${price.toLocaleString('vi')}`}</Text>
+      }${cost.toLocaleString('vi')}`}</Text>
     </View>
   );
 };
 
-export default memo(Amount);
+export default memo(Cost);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
   },
   text: {
     fontSize: 40,

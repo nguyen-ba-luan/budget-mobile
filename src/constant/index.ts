@@ -28,7 +28,7 @@ export interface ICurrency {
 }
 
 export interface IBudget {
-  amount: number;
+  cost: number;
   period: PeriodType;
   /**
    * Dữ liệu cho trường hợp custom
@@ -63,9 +63,11 @@ export interface ILedger {
 
 export interface ITransaction {
   id: number;
+  ledgerId: number;
+  cost: number;
   type: LedgerCategoryType;
-  categoryId: ILedgerCategory;
-  subCategoryId: string;
+  categoryId: number;
+  subCategoryId: number | null;
   time: string;
   note: string;
 }
@@ -84,15 +86,10 @@ export const defaultLedgerJson = {
         icon: 'icon',
         name: 'Gia đình',
         budget: {
-          amount: 150000,
+          cost: 150000,
           period: PeriodType.MONTHLY,
         },
-        subCategories: [
-          {
-            id: 1,
-            name: 'Tiền nhà',
-          },
-        ],
+        subCategories: [],
         type: LedgerCategoryType.EXPENSES,
       },
       {
@@ -101,15 +98,10 @@ export const defaultLedgerJson = {
         icon: 'icon',
         name: 'Cá nhân',
         budget: {
-          amount: 150000,
+          cost: 150000,
           period: PeriodType.MONTHLY,
         },
-        subCategories: [
-          {
-            id: 1,
-            name: 'Tiền nhà',
-          },
-        ],
+        subCategories: [],
         type: LedgerCategoryType.EXPENSES,
       },
     ],
@@ -127,17 +119,50 @@ export const defaultLedgerJson = {
         icon: 'icon',
         name: 'Gia đình 2',
         budget: {
-          amount: 150000,
+          cost: 150000,
           period: PeriodType.MONTHLY,
         },
-        subCategories: [
-          {
-            id: 4,
-            name: 'Tiền nhà 2',
-          },
-        ],
+        subCategories: [],
         type: LedgerCategoryType.EXPENSES,
       },
     ],
   },
 };
+
+export enum KeyCapType {
+  NUMBER = 'NUMBER',
+  DELETE = 'DELETE',
+  ACTION = 'ACTION',
+  SUBMIT = 'SUBMIT',
+}
+
+export interface IKeyCap {
+  type: KeyCapType;
+  label: string | number;
+  icon?: string;
+  bgColor?: string;
+}
+
+export const keyCapList: IKeyCap[] = [
+  {type: KeyCapType.NUMBER, label: 7},
+  {type: KeyCapType.NUMBER, label: 8},
+  {type: KeyCapType.NUMBER, label: 9},
+  {type: KeyCapType.DELETE, label: 'Del', icon: 'delete'},
+  {type: KeyCapType.NUMBER, label: 4},
+  {type: KeyCapType.NUMBER, label: 5},
+  {type: KeyCapType.NUMBER, label: 6},
+  {type: KeyCapType.ACTION, label: ''},
+  {type: KeyCapType.NUMBER, label: 1},
+  {type: KeyCapType.NUMBER, label: 2},
+  {type: KeyCapType.NUMBER, label: 3},
+  {type: KeyCapType.ACTION, label: ''},
+  {type: KeyCapType.ACTION, label: ''},
+  {type: KeyCapType.NUMBER, label: 0},
+  {type: KeyCapType.ACTION, label: ','},
+  {
+    type: KeyCapType.SUBMIT,
+    label: 'Done',
+    icon: 'check',
+    bgColor: 'gold',
+  },
+];

@@ -1,7 +1,13 @@
 import {create} from 'zustand';
 import {createJSONStorage, persist} from 'zustand/middleware';
-import {defaultLedgerJson, ILedger, ITransaction} from '../constant';
+import {
+  defaultLedgerJson,
+  ILedger,
+  ISubCategory,
+  ITransaction,
+} from '../constant';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {produce} from 'immer';
 
 interface StoreState {
   selectedLedgerId: number;
@@ -15,6 +21,11 @@ interface StoreState {
   };
   addLedger: (ledger: ILedger) => void;
   selectLedger: (id: number) => void;
+  addSubCategory: (input: {
+    subCategory: ISubCategory;
+    categoryId: number;
+  }) => void;
+  addTransaction: (transaction: ITransaction) => void;
 }
 
 export const RootStoreSelector = {
@@ -27,6 +38,10 @@ export const RootStoreSelector = {
       state.ledgerJson[ledgerId].categories?.find(
         item => item?.id === categoryId,
       ),
+  selectTransactionList: (state: StoreState) =>
+    state.transactionIdList
+      ?.map(item => state.transactionJson[item])
+      ?.filter(item => item?.ledgerId === state.selectedLedgerId),
 };
 
 export const useRootStore = create<StoreState>()(
@@ -49,6 +64,32 @@ export const useRootStore = create<StoreState>()(
             [ledger?.id]: ledger,
           },
         })),
+      addTransaction: transaction =>
+        set(state => ({
+          transactionIdList: [...state.transactionIdList, transaction?.id],
+          transactionJson: {
+            ...state.transactionJson,
+            [transaction?.id]: transaction,
+          },
+        })),
+      addSubCategory: ({categoryId, subCategory}) => {
+        return set(
+          produce((state: StoreState) => {
+            const categoryIndex = state.ledgerJson[
+              state.selectedLedgerId
+            ].categories?.findIndex(item => item?.id === categoryId);
+
+            if (categoryIndex > -1) {
+              const category =
+                state.ledgerJson[state.selectedLedgerId].categories[
+                  categoryIndex
+                ];
+
+              category.subCategories = [subCategory, ...category.subCategories];
+            }
+          }),
+        );
+      },
     }),
     {
       name: 'root-storage',

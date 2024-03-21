@@ -21,6 +21,7 @@ const CategoryList = () => {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const selectedLedger = useRootStore(RootStoreSelector.selectSelectedLedger);
+
   const categories = selectedLedger?.categories;
 
   const [activeSections, setActiveSections] = useState([0, 1]);
