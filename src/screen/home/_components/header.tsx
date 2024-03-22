@@ -26,7 +26,10 @@ const Header = () => {
   }, []);
 
   const onAddLedger = useCallback(() => {
-    navigation.navigate('AddLedger');
+    onToggleModal();
+    setTimeout(() => {
+      navigation.navigate('AddLedger');
+    }, 500);
   }, []);
 
   const onSelectLedger = useCallback(
@@ -48,10 +51,11 @@ const Header = () => {
         <Text
           style={{
             color: 'slateblue',
+            fontSize: 18,
           }}>
           {selectedLedger.name}
         </Text>
-        <Icon name={'caretdown'} size={8} color={'slateblue'} />
+        <Icon name={'caretdown'} size={12} color={'slateblue'} />
       </TouchableOpacity>
 
       <Modal transparent visible={visible} presentationStyle="overFullScreen">
@@ -74,14 +78,14 @@ const Header = () => {
                       />
                       <Icon
                         name={'pay-circle1'}
-                        size={14}
+                        size={18}
                         color={'dodgerblue'}
                       />
-                      <Text>{ledger?.name}</Text>
+                      <Text style={styles.ledgerName}>{ledger?.name}</Text>
                     </View>
                     <Ionicons
                       name={'settings-sharp'}
-                      size={20}
+                      size={24}
                       color={'grey'}
                     />
                   </TouchableOpacity>
@@ -96,10 +100,10 @@ const Header = () => {
                       styles.ledgerItemLeftInActive,
                     ]}
                   />
-                  <Icon name={'pluscircle'} size={14} color={'limegreen'} />
-                  <Text>{'Add Ledger'}</Text>
+                  <Icon name={'pluscircle'} size={18} color={'limegreen'} />
+                  <Text style={styles.ledgerName}>{'Add Ledger'}</Text>
                 </View>
-                <Ionicons name={'baseball'} size={20} color={'limegreen'} />
+                <Ionicons name={'baseball'} size={24} color={'limegreen'} />
               </TouchableOpacity>
             </View>
           </View>
@@ -136,20 +140,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 5,
+    paddingVertical: 10,
   },
   ledgerItemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 8,
   },
   ledgerItemLeftActive: {
     width: 2,
-    height: 15,
+    height: 20,
     backgroundColor: 'limegreen',
     marginRight: 10,
   },
   ledgerItemLeftInActive: {
     backgroundColor: 'transparent',
+  },
+  ledgerName: {
+    fontSize: 18,
   },
 });

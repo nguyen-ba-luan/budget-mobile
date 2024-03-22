@@ -31,7 +31,7 @@ const Keyboard = (props: IProps) => {
             activeOpacity={0.8}
             onPress={onPressItem(keyCap)}>
             {!!keyCap?.icon ? (
-              <Icon name={keyCap.icon} size={20} color={'slateblue'} />
+              <Icon name={keyCap.icon} size={26} color={'slateblue'} />
             ) : (
               <Text style={styles.textKeyCap}>{keyCap.label}</Text>
             )}
@@ -51,18 +51,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     gap: 5,
     paddingHorizontal: 10,
-    marginBottom: 15,
+    marginBottom: 30,
   },
   itemKeyCap: {
     width: (Metrics.screenWidth - 35) / 4,
     backgroundColor: 'whitesmoke',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
+    paddingVertical: 15,
     borderRadius: 2,
   },
   textKeyCap: {
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: 20,
   },
 });

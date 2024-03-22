@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: 'white',
-    paddingVertical: 5,
+    paddingVertical: 10,
     paddingHorizontal: 10,
     gap: 5,
     flexWrap: 'wrap',
@@ -71,9 +71,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'baseline',
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 30,
     minWidth: 50,
   },
   subText: {

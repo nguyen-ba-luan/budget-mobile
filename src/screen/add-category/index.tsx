@@ -2,7 +2,7 @@ import {StyleSheet, View} from 'react-native';
 import React from 'react';
 import {Header} from './_components';
 
-const AddLedger = () => {
+const AddCategory = () => {
   return (
     <View style={styles.container}>
       <Header />
@@ -10,7 +10,7 @@ const AddLedger = () => {
   );
 };
 
-export default AddLedger;
+export default AddCategory;
 
 const styles = StyleSheet.create({
   container: {

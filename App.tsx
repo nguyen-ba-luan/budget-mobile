@@ -13,7 +13,7 @@ function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle: StyleProp<ViewStyle> = {
-    backgroundColor: isDarkMode ? Colors.darker : '#ffffff',
+    backgroundColor: '#ffffff',
     flex: 1,
   };
 

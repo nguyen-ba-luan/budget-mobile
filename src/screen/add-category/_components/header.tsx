@@ -9,13 +9,7 @@ import {RootStackParamList} from '../../../navigation';
 const Header = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const route = useRoute<RouteProp<RootStackParamList, 'AddTransaction'>>();
-
-  const {categoryId} = route.params;
-
-  const selectedCategory = useRootStore(
-    CategorySelector.selectLedgerCategory(categoryId),
-  );
+  // const route = useRoute<RouteProp<RootStackParamList, 'AddLedger'>>();
 
   return (
     <View style={styles.container}>
@@ -25,7 +19,7 @@ const Header = () => {
         activeOpacity={0.8}>
         <Icon name={'close'} size={22} color={'black'} />
       </TouchableOpacity>
-      <Text style={styles.title}>{selectedCategory?.name || 'Category'}</Text>
+      <Text style={styles.title}>{'Add Category'}</Text>
     </View>
   );
 };

@@ -38,14 +38,14 @@ const MoreAction = (props: IProps) => {
         style={styles.subItem}
         activeOpacity={0.8}
         onPress={onAddNote}>
-        <Icon name="filetext1" color={'slateblue'} />
+        <Icon name="filetext1" color={'slateblue'} size={18} />
         <Text style={styles.subText}>{'Note'}</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.subItem}
         activeOpacity={0.8}
         onPress={openDatePicker}>
-        <Icon name="calendar" color={'slateblue'} />
+        <Icon name="calendar" color={'slateblue'} size={18} />
         <Text style={styles.subText}>
           {isSameToday ? 'Today' : dayjs(time).format('DD MMM')}
         </Text>
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     paddingHorizontal: 10,
-    gap: 5,
+    gap: 8,
     marginBottom: 10,
   },
   subItem: {
@@ -75,12 +75,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'khaki',
     alignSelf: 'baseline',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderRadius: 2,
-    gap: 4,
+    gap: 8,
   },
   subText: {
     color: 'slateblue',
+    fontSize: 18,
   },
 });
