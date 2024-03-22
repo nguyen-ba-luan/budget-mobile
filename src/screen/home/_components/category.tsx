@@ -7,22 +7,36 @@ import {
   View,
 } from 'react-native';
 import React, {memo, useCallback, useState} from 'react';
-import {LedgerSelector, useRootStore} from '../../../store';
+import {
+  LedgerSelector,
+  TransactionSelector,
+  useRootStore,
+} from '../../../store';
 import {useNavigation} from '@react-navigation/native';
 import {Metrics} from '../../../theme/metric';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Accordion from 'react-native-collapsible/Accordion';
-import {LedgerCategoryType} from '../../../constant';
+import {ITransaction, LedgerCategoryType} from '../../../constant';
 import {RootStackParamList} from '../../../navigation';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {formatNumber} from '../../../util';
 
 const CategoryList = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const selectedLedger = useRootStore(LedgerSelector.selectSelectedLedger);
+  const transactionList = useRootStore(
+    TransactionSelector.selectTransactionList,
+  );
+  const {
+    totalExpenses,
+    totalExpensesByCategory,
+    totalIncome,
+    totalIncomeByCategory,
+  } = getTransactionHome(transactionList);
 
-  const categories = selectedLedger?.categories;
+  const categoryList = selectedLedger?.categoryList;
 
   const [activeSections, setActiveSections] = useState([0, 1]);
 
@@ -39,15 +53,23 @@ const CategoryList = () => {
   const sections = [
     {
       type: LedgerCategoryType.EXPENSES,
-      categories: categories?.filter(
-        item => item?.type === LedgerCategoryType.EXPENSES,
-      ),
+      categoryList: categoryList
+        ?.filter(item => item?.type === LedgerCategoryType.EXPENSES)
+        ?.map(item => ({
+          ...item,
+          costTotal: totalExpensesByCategory[item?.id] || 0,
+        })),
+      total: totalExpenses,
     },
     {
       type: LedgerCategoryType.INCOME,
-      categories: categories?.filter(
-        item => item?.type === LedgerCategoryType.INCOME,
-      ),
+      categoryList: categoryList
+        ?.filter(item => item?.type === LedgerCategoryType.INCOME)
+        ?.map(item => ({
+          ...item,
+          costTotal: totalIncomeByCategory[item?.id] || 0,
+        })),
+      total: totalIncome,
     },
   ];
 
@@ -63,7 +85,9 @@ const CategoryList = () => {
           return (
             <View style={styles.headerContainer}>
               <Text>{content?.type}</Text>
-              <Text>{`${selectedLedger?.currency?.symbol}${0}`}</Text>
+              <Text style={styles.headerTotal}>{`${
+                selectedLedger?.currency?.symbol
+              }${formatNumber(content?.total || 0)}`}</Text>
               <Icon
                 name={isActive ? 'downcircle' : 'upcircle'}
                 color={'plum'}
@@ -75,7 +99,7 @@ const CategoryList = () => {
         renderContent={content => {
           return (
             <View style={styles.itemWrapper}>
-              {content.categories.map(category => {
+              {content.categoryList.map(category => {
                 return (
                   <TouchableOpacity
                     key={category.id}
@@ -84,7 +108,9 @@ const CategoryList = () => {
                     style={styles.itemContainer}>
                     <Text>{category?.name}</Text>
                     <Icon name="team" color={'deeppink'} size={30} />
-                    <Text>{`${selectedLedger?.currency?.symbol}${0}`}</Text>
+                    <Text>{`${selectedLedger?.currency?.symbol}${formatNumber(
+                      category?.costTotal,
+                    )}`}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -125,4 +151,48 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     gap: 15,
   },
+  headerTotal: {
+    fontWeight: '600',
+  },
 });
+
+const getTransactionHome = (transactionList: ITransaction[]) => {
+  let totalExpenses = 0;
+  let totalIncome = 0;
+
+  let totalExpensesByCategory: {
+    [categoryId: number]: number;
+  } = {};
+  let totalIncomeByCategory: {
+    [categoryId: number]: number;
+  } = {};
+
+  for (let i = 0; i < transactionList.length; i++) {
+    const transaction = transactionList[i];
+
+    if (transaction.type === LedgerCategoryType.EXPENSES) {
+      totalExpenses += transaction.cost;
+      totalExpensesByCategory = {
+        ...totalExpensesByCategory,
+        [transaction.categoryId]:
+          (totalExpensesByCategory[transaction.categoryId] || 0) +
+          transaction.cost,
+      };
+    } else {
+      totalIncome += transaction.cost;
+      totalIncomeByCategory = {
+        ...totalIncomeByCategory,
+        [transaction.categoryId]:
+          (totalIncomeByCategory[transaction.categoryId] || 0) +
+          transaction.cost,
+      };
+    }
+  }
+
+  return {
+    totalExpenses,
+    totalIncome,
+    totalExpensesByCategory,
+    totalIncomeByCategory,
+  };
+};

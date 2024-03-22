@@ -49,7 +49,7 @@ export interface ILedgerCategory {
   color: string;
   type: LedgerCategoryType;
   budget: IBudget;
-  subCategories: ISubCategory[];
+  subCategoryIdList: number[];
 }
 
 export interface ILedger {
@@ -58,7 +58,7 @@ export interface ILedger {
   icon: string;
   color: string;
   currency: ICurrency;
-  categories: ILedgerCategory[];
+  categoryIdList: number[];
 }
 
 export interface ITransaction {
@@ -72,39 +72,45 @@ export interface ITransaction {
   note: string;
 }
 
-export const defaultLedgerJson = {
+export const defaultLedgerJson: {
+  [id: number]: ILedger;
+} = {
   1: {
     id: 1,
     color: '#ff2f22',
     currency: CURRENCY[1],
     icon: 'icon',
     name: 'Chi tiêu',
-    categories: [
-      {
-        id: 1,
-        color: '#f3f3f3',
-        icon: 'icon',
-        name: 'Gia đình',
-        budget: {
-          cost: 150000,
-          period: PeriodType.MONTHLY,
-        },
-        subCategories: [],
-        type: LedgerCategoryType.EXPENSES,
-      },
-      {
-        id: 2,
-        color: '#f3f3f3',
-        icon: 'icon',
-        name: 'Salary',
-        budget: {
-          cost: 150000,
-          period: PeriodType.MONTHLY,
-        },
-        subCategories: [],
-        type: LedgerCategoryType.INCOME,
-      },
-    ],
+    categoryIdList: [1, 2],
+  },
+};
+
+export const defaultCategoryJson: {
+  [id: number]: ILedgerCategory;
+} = {
+  1: {
+    id: 1,
+    color: '#f3f3f3',
+    icon: 'icon',
+    name: 'Gia đình',
+    budget: {
+      cost: 150000,
+      period: PeriodType.MONTHLY,
+    },
+    subCategoryIdList: [],
+    type: LedgerCategoryType.EXPENSES,
+  },
+  2: {
+    id: 2,
+    color: '#f3f3f3',
+    icon: 'icon',
+    name: 'Salary',
+    budget: {
+      cost: 150000,
+      period: PeriodType.MONTHLY,
+    },
+    subCategoryIdList: [],
+    type: LedgerCategoryType.INCOME,
   },
 };
 

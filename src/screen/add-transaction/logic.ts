@@ -3,7 +3,7 @@ import {IKeyCap, KeyCapType, LedgerCategoryType} from '../../constant';
 import useMergingState from '../../hook/useMergingState';
 import dayjs from 'dayjs';
 import {useRef} from 'react';
-import {useRootStore} from '../../store';
+import {CategorySelector, useRootStore} from '../../store';
 import {generateUUID} from '../../util';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {RootStackParamList} from '../../navigation';
@@ -30,6 +30,9 @@ export const useAddTransactionLogic = () => {
   });
 
   const {addSubCategory, addTransaction} = useRootStore();
+  const category = useRootStore(
+    CategorySelector.selectLedgerCategory(categoryId),
+  );
 
   const inputRef = useRef<TextInput>(null);
   const inputValueRef = useRef('');
@@ -106,7 +109,7 @@ export const useAddTransactionLogic = () => {
         note: state.note,
         subCategoryId: state.selectedSubCategoryId,
         time: state.time,
-        type: LedgerCategoryType.EXPENSES,
+        type: category?.type,
       });
     },
   };

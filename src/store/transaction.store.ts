@@ -1,9 +1,12 @@
 import {StateCreator} from 'zustand';
 import {ITransaction} from '../constant';
 import {LedgerState} from './ledger.store';
+import {StoreState} from '.';
 
 export interface TransactionState {
-  transactionIdList: number[];
+  transactionIdList: {
+    [ledgerId: number]: number[];
+  };
   transactionJson: {
     [id: number]: ITransaction;
   };
@@ -11,10 +14,10 @@ export interface TransactionState {
 }
 
 export const TransactionSelector = {
-  selectTransactionList: (state: TransactionState & LedgerState) =>
-    state.transactionIdList
-      ?.map(item => state.transactionJson[item])
-      ?.filter(item => item?.ledgerId === state.selectedLedgerId),
+  selectTransactionList: (state: StoreState) =>
+    state.transactionIdList[state.selectedLedgerId]?.map(
+      item => state.transactionJson[item],
+    ) || [],
 };
 
 export const createTransactionSlice: StateCreator<
@@ -23,11 +26,17 @@ export const createTransactionSlice: StateCreator<
   [],
   TransactionState
 > = set => ({
-  transactionIdList: [],
+  transactionIdList: {},
   transactionJson: {},
   addTransaction: transaction =>
     set(state => ({
-      transactionIdList: [...state.transactionIdList, transaction?.id],
+      transactionIdList: {
+        ...state.transactionIdList,
+        [state.selectedLedgerId]: [
+          ...(state.transactionIdList[state.selectedLedgerId] || []),
+          transaction?.id,
+        ],
+      },
       transactionJson: {
         ...state.transactionJson,
         [transaction?.id]: transaction,

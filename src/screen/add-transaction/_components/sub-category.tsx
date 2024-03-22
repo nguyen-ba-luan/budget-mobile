@@ -1,6 +1,6 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {memo, useCallback} from 'react';
-import {LedgerSelector, useRootStore} from '../../../store';
+import {CategorySelector, useRootStore} from '../../../store';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {RootStackParamList} from '../../../navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -15,10 +15,10 @@ const SubCategory = (props: IProps) => {
   const {onSelect, selectedSubCategoryId, onAddMore} = props;
   const route = useRoute<RouteProp<RootStackParamList, 'AddTransaction'>>();
 
-  const {categoryId, ledgerId} = route.params;
+  const {categoryId} = route.params;
 
   const selectedCategory = useRootStore(
-    LedgerSelector.selectLedgerCategory(ledgerId, categoryId),
+    CategorySelector.selectLedgerCategory(categoryId),
   );
 
   const onPress = useCallback(
@@ -30,7 +30,7 @@ const SubCategory = (props: IProps) => {
 
   return (
     <View style={styles.container}>
-      {selectedCategory?.subCategories?.map(item => {
+      {selectedCategory?.subCategoryList?.map(item => {
         const selected = selectedSubCategoryId === item?.id;
 
         return (

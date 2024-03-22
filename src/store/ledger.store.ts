@@ -1,5 +1,6 @@
 import {StateCreator} from 'zustand';
 import {ILedger, defaultLedgerJson} from '../constant';
+import {CategorySelector, StoreState} from '.';
 
 export interface LedgerState {
   selectedLedgerId: number;
@@ -12,15 +13,15 @@ export interface LedgerState {
 }
 
 export const LedgerSelector = {
-  selectSelectedLedger: (state: LedgerState) =>
-    state.ledgerJson[state.selectedLedgerId],
+  selectSelectedLedger: (state: StoreState) => ({
+    ...state.ledgerJson[state.selectedLedgerId],
+    categoryList:
+      state.ledgerJson[state.selectedLedgerId]?.categoryIdList?.map(
+        item => state.categoryJson[item],
+      ) || [],
+  }),
   selectLedgerList: (state: LedgerState) =>
     state.ledgerIdList?.map(item => state.ledgerJson[item]),
-  selectLedgerCategory:
-    (ledgerId: number, categoryId: number) => (state: LedgerState) =>
-      state.ledgerJson[ledgerId].categories?.find(
-        item => item?.id === categoryId,
-      ),
 };
 
 export const createLedgerSlice: StateCreator<

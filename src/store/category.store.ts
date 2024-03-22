@@ -1,14 +1,23 @@
 import {StateCreator} from 'zustand';
-import {ISubCategory} from '../constant';
+import {ILedgerCategory, defaultCategoryJson} from '../constant';
 import {LedgerState} from './ledger.store';
-import {produce} from 'immer';
+import {StoreState} from '.';
 
 export interface CategoryState {
-  addSubCategory: (input: {
-    subCategory: ISubCategory;
-    categoryId: number;
-  }) => void;
+  categoryJson: {
+    [id: number]: ILedgerCategory;
+  };
+  addCategory: (params: {category: ILedgerCategory; ledgerId: number}) => void;
 }
+
+export const CategorySelector = {
+  selectLedgerCategory: (categoryId: number) => (state: StoreState) => ({
+    ...state.categoryJson[categoryId],
+    subCategoryList: state.categoryJson[categoryId]?.subCategoryIdList?.map(
+      item => state.subCategoryJson[item],
+    ),
+  }),
+};
 
 export const createCategorySlice: StateCreator<
   CategoryState & LedgerState,
@@ -16,20 +25,25 @@ export const createCategorySlice: StateCreator<
   [],
   CategoryState
 > = set => ({
-  addSubCategory: ({categoryId, subCategory}) => {
-    return set(
-      produce((state: CategoryState & LedgerState) => {
-        const categoryIndex = state.ledgerJson[
-          state.selectedLedgerId
-        ].categories?.findIndex(item => item?.id === categoryId);
+  categoryJson: defaultCategoryJson,
+  addCategory: ({category, ledgerId}) =>
+    set(state => {
+      const categoryIdList = state.ledgerJson[ledgerId]?.categoryIdList?.concat(
+        category?.id,
+      );
 
-        if (categoryIndex > -1) {
-          const category =
-            state.ledgerJson[state.selectedLedgerId].categories[categoryIndex];
-
-          category.subCategories = [subCategory, ...category.subCategories];
-        }
-      }),
-    );
-  },
+      return {
+        ledgerJson: {
+          ...state.ledgerJson,
+          [ledgerId]: {
+            ...(state.ledgerJson[ledgerId] || {}),
+            categoryIdList,
+          },
+        },
+        categoryJson: {
+          ...state.categoryJson,
+          [category.id]: category,
+        },
+      };
+    }),
 });
