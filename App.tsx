@@ -6,7 +6,6 @@ import {
   useColorScheme,
   ViewStyle,
 } from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 import AppNavigation from './src/navigation';
 
 function App(): React.JSX.Element {

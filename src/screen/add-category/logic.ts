@@ -1,4 +1,4 @@
-import {useNavigation} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import useMergingState from '../../hook/useMergingState';
 import {RootStackParamList} from '../../navigation';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -22,10 +22,13 @@ export const useLogic = () => {
 
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'AddLedger'>>();
 
   const handlers = {
     ON_SELECT_COLOR: () => {
-      // console.log('ON_SELECT_COLOR');
+      navigation.navigate('ChooseColor', {
+        previousScreen: route?.name,
+      });
     },
     ON_ADD_MORE_SUB_CATEGORY: () => {
       inputRef.current?.focus();

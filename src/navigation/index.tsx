@@ -5,6 +5,8 @@ import HomeScreen from '../screen/home';
 import AddTransaction from '../screen/add-transaction';
 import AddLedger from '../screen/add-ledger';
 import AddCategory from '../screen/add-category';
+import {ILedgerCategory} from '../constant';
+import ChooseColor from '../screen/choose-color';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -37,6 +39,14 @@ function AppNavigation() {
           name="AddCategory"
           component={AddCategory}
         />
+        <Stack.Screen
+          options={{
+            presentation: 'formSheet',
+            gestureEnabled: false,
+          }}
+          name="ChooseColor"
+          component={ChooseColor}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -46,7 +56,15 @@ export default AppNavigation;
 
 export type RootStackParamList = {
   Home: undefined;
-  AddLedger: {ledgerId?: number};
+  AddLedger: {ledgerId?: number; color?: string};
   AddTransaction: {ledgerId: number; categoryId: number};
-  AddCategory: {ledgerId?: number; categoryId?: number};
+  AddCategory: {
+    ledgerId?: number;
+    categoryId?: number;
+    callback?(category: ILedgerCategory): void;
+  };
+  ChooseColor: {
+    color?: string;
+    previousScreen: string;
+  };
 };
