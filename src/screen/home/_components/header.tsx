@@ -11,9 +11,14 @@ import {LedgerSelector, useRootStore} from '../../../store';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
+import {isNilOrEmpty} from 'ramda-adjunct';
+import {ILedger} from '../../../constant';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../../../navigation';
 
 const Header = () => {
-  const navigation = useNavigation<any>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const selectedLedger = useRootStore(LedgerSelector.selectSelectedLedger);
   const ledgerList = useRootStore(LedgerSelector.selectLedgerList);
@@ -42,6 +47,15 @@ const Header = () => {
     [selectLedger, selectedLedger],
   );
 
+  const onEditLedger = useCallback(
+    (ledger: ILedger) => () => {
+      navigation.navigate('AddLedger', {
+        ledgerId: ledger?.id,
+      });
+    },
+    [],
+  );
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -53,7 +67,7 @@ const Header = () => {
             color: 'slateblue',
             fontSize: 18,
           }}>
-          {selectedLedger.name}
+          {isNilOrEmpty(ledgerList) ? 'Add Ledger' : selectedLedger.name}
         </Text>
         <Icon name={'caretdown'} size={12} color={'slateblue'} />
       </TouchableOpacity>
@@ -83,11 +97,15 @@ const Header = () => {
                       />
                       <Text style={styles.ledgerName}>{ledger?.name}</Text>
                     </View>
-                    <Ionicons
-                      name={'settings-sharp'}
-                      size={24}
-                      color={'grey'}
-                    />
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      onPress={onEditLedger(ledger)}>
+                      <Ionicons
+                        name={'settings-sharp'}
+                        size={24}
+                        color={'grey'}
+                      />
+                    </TouchableOpacity>
                   </TouchableOpacity>
                 );
               })}

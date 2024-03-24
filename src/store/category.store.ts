@@ -1,7 +1,8 @@
 import {StateCreator} from 'zustand';
-import {ILedgerCategory, defaultCategoryJson} from '../constant';
+import {IFullLedgerCategory, ILedgerCategory} from '../constant';
 import {LedgerState} from './ledger.store';
 import {StoreState} from '.';
+import {omit} from 'ramda';
 
 export interface CategoryState {
   categoryJson: {
@@ -11,12 +12,15 @@ export interface CategoryState {
 }
 
 export const CategorySelector = {
-  selectLedgerCategory: (categoryId: number) => (state: StoreState) => ({
-    ...state.categoryJson[categoryId],
-    subCategoryList: state.categoryJson[categoryId]?.subCategoryIdList?.map(
-      item => state.subCategoryJson[item],
-    ),
-  }),
+  selectLedgerCategory: (categoryId?: number) => (state: StoreState) =>
+    categoryId
+      ? {
+          ...omit(['subCategoryIdList'], state.categoryJson[categoryId]),
+          subCategoryList: state.categoryJson[
+            categoryId
+          ]?.subCategoryIdList?.map(item => state.subCategoryJson[item]),
+        }
+      : ({} as IFullLedgerCategory),
 };
 
 export const createCategorySlice: StateCreator<
@@ -25,7 +29,7 @@ export const createCategorySlice: StateCreator<
   [],
   CategoryState
 > = set => ({
-  categoryJson: defaultCategoryJson,
+  categoryJson: {},
   addCategory: ({category, ledgerId}) =>
     set(state => {
       const categoryIdList = state.ledgerJson[ledgerId]?.categoryIdList?.concat(

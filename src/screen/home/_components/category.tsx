@@ -86,7 +86,7 @@ const CategoryList = () => {
             <View style={styles.headerContainer}>
               <Text>{content?.type}</Text>
               <Text style={styles.headerTotal}>{`${
-                selectedLedger?.currency?.symbol
+                selectedLedger?.currency?.symbol || '₫'
               }${formatNumber(content?.total || 0)}`}</Text>
               <Icon
                 name={isActive ? 'downcircle' : 'upcircle'}

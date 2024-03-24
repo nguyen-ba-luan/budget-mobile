@@ -2,39 +2,59 @@ import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import useMergingState from '../../hook/useMergingState';
 import {RootStackParamList} from '../../navigation';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {useRootStore} from '../../store';
+import {LedgerSelector, useRootStore} from '../../store';
 import {generateUUID} from '../../util';
-import {CURRENCY, ILedgerCategory} from '../../constant';
+import {
+  CURRENCY,
+  IFullLedgerCategory,
+  ILedgerCategory,
+  ISubCategory,
+} from '../../constant';
 import {useEffect, useRef} from 'react';
 import {TextInput} from 'react-native';
+import {omit, uniq} from 'ramda';
 
 export const useLogic = () => {
-  const [state, setState] = useMergingState({
-    name: '',
-    categoryList: [] as ILedgerCategory[],
-    color: 'yellow',
-  });
-
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'AddLedger'>>();
+  const ledgerId = route?.params?.ledgerId;
+
+  const ledgerDetail = useRootStore(LedgerSelector.selectLedgerById(ledgerId));
+
+  const [state, setState] = useMergingState({
+    name: ledgerDetail?.name || '',
+    categoryList: ledgerDetail?.categoryList || ([] as IFullLedgerCategory[]),
+    color: ledgerDetail?.color || 'yellow',
+  });
 
   const inputRef = useRef<TextInput>(null);
 
   const {addLedger} = useRootStore();
 
   useEffect(() => {
-    if (!route.params?.color) return;
+    if (!route.params?.color) {
+      return;
+    }
 
     setState({color: route.params?.color});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route.params?.color]);
 
   useEffect(() => {
-    if (!route.params?.category) return;
+    if (!route.params?.category) {
+      return;
+    }
+    const categoryId = route.params?.categoryId;
 
     setState(prevState => ({
-      categoryList: [...prevState.categoryList, route.params?.category!],
+      categoryList: categoryId
+        ? prevState.categoryList?.map(category =>
+            category?.id === categoryId
+              ? {...category, ...route.params?.category}
+              : category,
+          )
+        : [...prevState.categoryList, route.params?.category!],
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route.params?.category]);
@@ -50,9 +70,9 @@ export const useLogic = () => {
         previousScreen: route.name,
       });
     },
-    ON_EDIT_CATEGORY: (categoryId: number) => () => {
+    ON_EDIT_CATEGORY: (category: IFullLedgerCategory) => () => {
       navigation.navigate('AddCategory', {
-        categoryId,
+        category,
         previousScreen: route.name,
       });
     },
@@ -63,11 +83,48 @@ export const useLogic = () => {
       setState({name: text});
     },
     ON_SUBMIT: () => {
+      const categoryIdList: number[] = [];
+
+      let categoryJson: {
+        [id: number]: ILedgerCategory;
+      } = {};
+
+      let subCategoryJson: {
+        [id: number]: ISubCategory;
+      } = {};
+
+      for (let i = 0; i < state.categoryList.length; i++) {
+        const category = state.categoryList[i];
+
+        categoryIdList.push(category.id);
+
+        const subCategoryIdList: number[] = [];
+
+        for (const subCategory of category?.subCategoryList) {
+          subCategoryIdList.push(subCategory?.id);
+
+          subCategoryJson = {
+            ...subCategoryJson,
+            [subCategory.id]: subCategory,
+          };
+        }
+
+        categoryJson = {
+          ...categoryJson,
+          [category.id]: {
+            ...omit(['subCategoryList'], category),
+            subCategoryIdList: uniq(subCategoryIdList),
+          },
+        };
+      }
+
       addLedger({
-        id: generateUUID(),
+        categoryJson,
+        subCategoryJson,
+        categoryIdList: uniq(categoryIdList),
+        id: ledgerId || generateUUID(),
         name: state.name || 'Ledger',
-        categoryIdList: state.categoryList?.map(item => item?.id),
-        color: 'color',
+        color: state.color,
         currency: CURRENCY[1],
         icon: 'icon',
       });

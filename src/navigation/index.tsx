@@ -5,7 +5,7 @@ import HomeScreen from '../screen/home';
 import AddTransaction from '../screen/add-transaction';
 import AddLedger from '../screen/add-ledger';
 import AddCategory from '../screen/add-category';
-import {IBudget, ILedgerCategory} from '../constant';
+import {IBudget, IFullLedgerCategory} from '../constant';
 import ChooseColor from '../screen/choose-color';
 import AddBudget from '../screen/add-budget';
 
@@ -64,10 +64,13 @@ export default AppNavigation;
 
 export type RootStackParamList = {
   Home: undefined;
-  AddLedger: {
+  AddLedger?: {
     ledgerId?: number;
+    /** PARAMS FOR SET PARAMS FROM OTHER SCREEN */
     color?: string;
-    category?: ILedgerCategory;
+    category?: IFullLedgerCategory;
+    categoryId?: number;
+    /** PARAMS FOR SET PARAMS FROM OTHER SCREEN */
   };
   AddTransaction: {
     ledgerId: number;
@@ -75,11 +78,12 @@ export type RootStackParamList = {
   };
   AddCategory: {
     ledgerId?: number;
-    categoryId?: number;
+    category?: IFullLedgerCategory;
+    previousScreen: string;
+    /** PARAMS FOR SET PARAMS FROM OTHER SCREEN */
     color?: string;
     budget?: IBudget;
-    callback?(category: ILedgerCategory): void;
-    previousScreen: string;
+    /** PARAMS FOR SET PARAMS FROM OTHER SCREEN */
   };
   ChooseColor: {
     color?: string;

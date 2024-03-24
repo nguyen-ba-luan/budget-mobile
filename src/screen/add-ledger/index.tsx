@@ -53,7 +53,7 @@ const AddLedger = () => {
             key={category.id}
             style={styles.rowItem}
             activeOpacity={0.8}
-            onPress={handlers.ON_EDIT_CATEGORY(category?.id)}>
+            onPress={handlers.ON_EDIT_CATEGORY(category)}>
             <View style={styles.row}>
               <View
                 style={[

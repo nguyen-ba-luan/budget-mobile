@@ -1,6 +1,16 @@
 import {StateCreator} from 'zustand';
-import {ILedger, defaultLedgerJson} from '../constant';
-import {StoreState} from '.';
+import {ILedger, ILedgerCategory, ISubCategory} from '../constant';
+import {CategorySelector, StoreState} from '.';
+import {omit, uniq} from 'ramda';
+
+interface AddLedgerPayload extends ILedger {
+  categoryJson: {
+    [id: number]: ILedgerCategory;
+  };
+  subCategoryJson: {
+    [id: number]: ISubCategory;
+  };
+}
 
 export interface LedgerState {
   selectedLedgerId: number;
@@ -8,7 +18,7 @@ export interface LedgerState {
   ledgerJson: {
     [id: number]: ILedger;
   };
-  addLedger: (ledger: ILedger) => void;
+  addLedger: (ledger: AddLedgerPayload) => void;
   selectLedger: (id: number) => void;
 }
 
@@ -22,27 +32,45 @@ export const LedgerSelector = {
   }),
   selectLedgerList: (state: LedgerState) =>
     state.ledgerIdList?.map(item => state.ledgerJson[item]),
+  selectLedgerById: (id?: number) => (state: StoreState) =>
+    id
+      ? {
+          ...state.ledgerJson[id],
+          categoryList:
+            state.ledgerJson[id]?.categoryIdList?.map(item =>
+              CategorySelector.selectLedgerCategory(item)(state),
+            ) || [],
+        }
+      : undefined,
 };
 
 export const createLedgerSlice: StateCreator<
-  LedgerState,
+  StoreState,
   [],
   [],
   LedgerState
 > = set => ({
-  selectedLedgerId: 1,
-  ledgerIdList: [1],
-  ledgerJson: defaultLedgerJson,
+  selectedLedgerId: 0,
+  ledgerIdList: [],
+  ledgerJson: {},
   selectLedger: (id: number) =>
     set(() => ({
       selectedLedgerId: id,
     })),
-  addLedger: (ledger: ILedger) =>
-    set((state: LedgerState) => ({
-      ledgerIdList: [...state.ledgerIdList, ledger.id],
+  addLedger: (payload: AddLedgerPayload) =>
+    set((state: StoreState) => ({
+      ledgerIdList: uniq([...state.ledgerIdList, payload.id]),
       ledgerJson: {
         ...state.ledgerJson,
-        [ledger?.id]: ledger,
+        [payload?.id]: omit(['categoryJson', 'subCategoryJson'], payload),
+      },
+      categoryJson: {
+        ...state.categoryJson,
+        ...payload?.categoryJson,
+      },
+      subCategoryJson: {
+        ...state.subCategoryJson,
+        ...payload?.subCategoryJson,
       },
     })),
 });

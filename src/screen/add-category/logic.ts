@@ -6,6 +6,7 @@ import {useEffect, useRef} from 'react';
 import {TextInput} from 'react-native';
 import {
   IBudget,
+  IFullLedgerCategory,
   ISubCategory,
   LedgerCategoryType,
   PeriodType,
@@ -19,24 +20,27 @@ export enum InputType {
 }
 
 export const useLogic = () => {
-  const [state, setState] = useMergingState({
-    name: '',
-    subCategoryList: [] as ISubCategory[],
-    inputType: '' as InputType,
-    inputValue: '',
-    color: 'yellow',
-    type: LedgerCategoryType.EXPENSES,
-    budget: {
-      cost: 0,
-      period: PeriodType.MONTHLY,
-    } as IBudget,
-  });
-
-  const inputRef = useRef<TextInput>(null);
-
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'AddCategory'>>();
+  const category = route?.params?.category;
+
+  const [state, setState] = useMergingState({
+    name: category?.name || '',
+    subCategoryList: category?.subCategoryList || ([] as ISubCategory[]),
+    inputType: '' as InputType,
+    inputValue: '',
+    color: category?.color || 'yellow',
+    type: category?.type || LedgerCategoryType.EXPENSES,
+    budget:
+      category?.budget ||
+      ({
+        cost: 0,
+        period: PeriodType.MONTHLY,
+      } as IBudget),
+  });
+
+  const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     if (!route.params?.color) {
@@ -105,8 +109,8 @@ export const useLogic = () => {
       }));
     },
     ON_SUBMIT: () => {
-      const newCategory = {
-        id: generateUUID(),
+      const newCategory: IFullLedgerCategory = {
+        id: category?.id ?? generateUUID(),
         name: state.name || 'Category',
         type: state.type,
         color: state.color,
@@ -118,6 +122,7 @@ export const useLogic = () => {
       navigation.navigate({
         name: route?.params?.previousScreen,
         params: {
+          categoryId: category?.id,
           category: newCategory,
         },
         merge: true,
