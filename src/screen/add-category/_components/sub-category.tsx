@@ -1,8 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {memo, useCallback} from 'react';
-import {CategorySelector, useRootStore} from '../../../store';
-import {RouteProp, useRoute} from '@react-navigation/native';
-import {RootStackParamList} from '../../../navigation';
+import React, {memo} from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {ISubCategory} from '../../../constant';
 
@@ -13,9 +10,6 @@ interface IProps {
 
 const SubCategory = (props: IProps) => {
   const {onAddMore, subCategoryList = []} = props;
-  const route = useRoute<RouteProp<RootStackParamList, 'AddCategory'>>();
-
-  const {categoryId} = route.params;
 
   return (
     <View style={styles.container}>

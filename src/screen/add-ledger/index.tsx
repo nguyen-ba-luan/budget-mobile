@@ -55,16 +55,20 @@ const AddLedger = () => {
             activeOpacity={0.8}
             onPress={handlers.ON_EDIT_CATEGORY(category?.id)}>
             <View style={styles.row}>
-              <View style={styles.categoryIconWrapper}>
+              <View
+                style={[
+                  styles.categoryIconWrapper,
+                  {backgroundColor: category?.color},
+                ]}>
                 <Icon name="smile-circle" color={'white'} size={18} />
               </View>
               <Text style={{fontSize: 18}}>{category?.name}</Text>
             </View>
             <View style={styles.row}>
               <View style={styles.valueWrapper}>
-                <Text style={styles.valueText}>{`₫${formatNumber(
-                  category?.budget?.cost,
-                )}`}</Text>
+                <Text style={styles.valueText}>{`${
+                  category?.budget?.period
+                } ₫${formatNumber(category?.budget?.cost)}`}</Text>
               </View>
               <Icon name="right" color={'slategray'} />
             </View>

@@ -30,6 +30,15 @@ export const useLogic = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route.params?.color]);
 
+  useEffect(() => {
+    if (!route.params?.category) return;
+
+    setState(prevState => ({
+      categoryList: [...prevState.categoryList, route.params?.category!],
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route.params?.category]);
+
   const handlers = {
     ON_SELECT_COLOR: () => {
       navigation.navigate('ChooseColor', {
@@ -38,23 +47,13 @@ export const useLogic = () => {
     },
     ON_ADD_CATEGORY: () => {
       navigation.navigate('AddCategory', {
-        callback(category) {
-          setState(prevState => ({
-            categoryList: [...prevState.categoryList, category],
-          }));
-        },
+        previousScreen: route.name,
       });
     },
     ON_EDIT_CATEGORY: (categoryId: number) => () => {
       navigation.navigate('AddCategory', {
         categoryId,
-        callback(category) {
-          setState(prevState => ({
-            categoryList: prevState?.categoryList?.map(item =>
-              item?.id === categoryId ? category : item,
-            ),
-          }));
-        },
+        previousScreen: route.name,
       });
     },
     ON_CHANGE_NAME: () => {

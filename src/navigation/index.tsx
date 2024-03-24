@@ -5,8 +5,9 @@ import HomeScreen from '../screen/home';
 import AddTransaction from '../screen/add-transaction';
 import AddLedger from '../screen/add-ledger';
 import AddCategory from '../screen/add-category';
-import {ILedgerCategory} from '../constant';
+import {IBudget, ILedgerCategory} from '../constant';
 import ChooseColor from '../screen/choose-color';
+import AddBudget from '../screen/add-budget';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -47,6 +48,13 @@ function AppNavigation() {
           name="ChooseColor"
           component={ChooseColor}
         />
+        <Stack.Screen
+          options={{
+            presentation: 'transparentModal',
+          }}
+          name="AddBudget"
+          component={AddBudget}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -56,15 +64,29 @@ export default AppNavigation;
 
 export type RootStackParamList = {
   Home: undefined;
-  AddLedger: {ledgerId?: number; color?: string};
-  AddTransaction: {ledgerId: number; categoryId: number};
+  AddLedger: {
+    ledgerId?: number;
+    color?: string;
+    category?: ILedgerCategory;
+  };
+  AddTransaction: {
+    ledgerId: number;
+    categoryId: number;
+  };
   AddCategory: {
     ledgerId?: number;
     categoryId?: number;
+    color?: string;
+    budget?: IBudget;
     callback?(category: ILedgerCategory): void;
+    previousScreen: string;
   };
   ChooseColor: {
     color?: string;
     previousScreen: string;
+  };
+  AddBudget: {
+    previousScreen: string;
+    budget?: IBudget;
   };
 };

@@ -19,7 +19,7 @@ const ChooseColor = ({
       params: {
         color,
       },
-      marge: true,
+      merge: true,
     } as any);
   }, [navigation, color, route.params?.previousScreen]);
 

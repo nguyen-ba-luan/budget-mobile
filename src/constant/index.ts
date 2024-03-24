@@ -119,6 +119,7 @@ export enum KeyCapType {
   DELETE = 'DELETE',
   ACTION = 'ACTION',
   SUBMIT = 'SUBMIT',
+  RESET = 'RESET',
 }
 
 export interface IKeyCap {
@@ -126,6 +127,7 @@ export interface IKeyCap {
   label: string | number;
   icon?: string;
   bgColor?: string;
+  iconColor?: string;
 }
 
 export const keyCapList: IKeyCap[] = [
@@ -142,6 +144,35 @@ export const keyCapList: IKeyCap[] = [
   {type: KeyCapType.NUMBER, label: 3},
   {type: KeyCapType.ACTION, label: ''},
   {type: KeyCapType.ACTION, label: ''},
+  {type: KeyCapType.NUMBER, label: 0},
+  {type: KeyCapType.ACTION, label: ','},
+  {
+    type: KeyCapType.SUBMIT,
+    label: 'Done',
+    icon: 'check',
+    bgColor: 'gold',
+  },
+];
+
+export const keyCapBudgetList: IKeyCap[] = [
+  {type: KeyCapType.NUMBER, label: 7},
+  {type: KeyCapType.NUMBER, label: 8},
+  {type: KeyCapType.NUMBER, label: 9},
+  {type: KeyCapType.DELETE, label: 'Del', icon: 'delete'},
+  {type: KeyCapType.NUMBER, label: 4},
+  {type: KeyCapType.NUMBER, label: 5},
+  {type: KeyCapType.NUMBER, label: 6},
+  {type: KeyCapType.ACTION, label: ''},
+  {type: KeyCapType.NUMBER, label: 1},
+  {type: KeyCapType.NUMBER, label: 2},
+  {type: KeyCapType.NUMBER, label: 3},
+  {type: KeyCapType.ACTION, label: ''},
+  {
+    type: KeyCapType.RESET,
+    label: '',
+    icon: 'trash-2',
+    iconColor: 'red',
+  },
   {type: KeyCapType.NUMBER, label: 0},
   {type: KeyCapType.ACTION, label: ','},
   {

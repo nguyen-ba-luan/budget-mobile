@@ -1,6 +1,6 @@
 import {StateCreator} from 'zustand';
 import {ILedger, defaultLedgerJson} from '../constant';
-import {CategorySelector, StoreState} from '.';
+import {StoreState} from '.';
 
 export interface LedgerState {
   selectedLedgerId: number;

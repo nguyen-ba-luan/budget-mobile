@@ -1,5 +1,5 @@
 import {TextInput} from 'react-native';
-import {IKeyCap, KeyCapType, LedgerCategoryType} from '../../constant';
+import {IKeyCap, KeyCapType} from '../../constant';
 import useMergingState from '../../hook/useMergingState';
 import dayjs from 'dayjs';
 import {useRef} from 'react';

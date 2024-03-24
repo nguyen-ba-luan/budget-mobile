@@ -10,10 +10,16 @@ import React from 'react';
 import {Header, SubCategory} from './_components';
 import {InputType, useLogic} from './logic';
 import {useKeyboard} from '../../hook';
+//@ts-ignore
+import SwitchSelector from 'react-native-switch-selector';
+import {LedgerCategoryType} from '../../constant';
+import {formatNumber} from '../../util';
+import {useIsFocused} from '@react-navigation/native';
 
 const AddCategory = () => {
   const {handlers, state, inputRef} = useLogic();
   const {keyboardShown, keyboardHeight} = useKeyboard();
+  const isFocus = useIsFocused();
 
   return (
     <View style={styles.container}>
@@ -22,7 +28,10 @@ const AddCategory = () => {
         <View style={styles.rowItem}>
           <Text style={styles.label}>Name</Text>
           <TouchableOpacity
-            style={styles.valueWrapper}
+            style={[
+              styles.valueWrapper,
+              keyboardShown && styles.valueWrapperActive,
+            ]}
             activeOpacity={0.8}
             onPress={handlers.ON_CHANGE_NAME}>
             <Text style={styles.valueText}>
@@ -32,20 +41,56 @@ const AddCategory = () => {
         </View>
         <View style={styles.rowItem}>
           <Text style={styles.label}>Color</Text>
-          <TouchableOpacity style={styles.color} activeOpacity={0.8} />
+          <TouchableOpacity
+            style={[styles.color, {backgroundColor: state.color}]}
+            activeOpacity={0.8}
+            onPress={handlers.ON_SELECT_COLOR}
+          />
         </View>
         <View style={styles.rowItem}>
-          <Text style={styles.label}>Category</Text>
-          <View style={styles.valueWrapper}>
-            <Text style={styles.valueText}>₫10.000.000</Text>
-          </View>
+          <Text style={styles.label}>Type</Text>
+          <SwitchSelector
+            initial={0}
+            options={[
+              {label: 'Expenses', value: LedgerCategoryType.EXPENSES},
+              {label: 'Income', value: LedgerCategoryType.INCOME},
+            ]}
+            textColor={'gray'}
+            selectedColor={'slateblue'}
+            buttonColor={'white'}
+            borderColor={'whitesmoke'}
+            backgroundColor={'whitesmoke'}
+            hasPadding
+            valuePadding={2}
+            style={styles.switchContainer}
+            onPress={handlers.ON_CHANGE_TYPE}
+            height={35}
+          />
         </View>
+        {state.type === LedgerCategoryType.EXPENSES && (
+          <View style={styles.rowItem}>
+            <Text style={styles.label}>Budget</Text>
+            <TouchableOpacity
+              style={[
+                styles.valueWrapper,
+                state.inputType === InputType.BUDGET &&
+                  !isFocus &&
+                  styles.valueWrapperActive,
+              ]}
+              activeOpacity={0.8}
+              onPress={handlers.ON_CHANGE_BUDGET}>
+              <Text style={styles.valueText}>{`${
+                state.budget?.period
+              } ₫${formatNumber(state.budget?.cost)}`}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         <View style={styles.rowItem}>
           <Text style={styles.label}>Subcategory</Text>
           <View />
         </View>
         <SubCategory
-          subCategoryList={[]}
+          subCategoryList={state.subCategoryList}
           onAddMore={handlers.ON_ADD_MORE_SUB_CATEGORY}
         />
       </ScrollView>
@@ -102,6 +147,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 20,
   },
+  valueWrapperActive: {
+    backgroundColor: 'khaki',
+  },
   color: {
     backgroundColor: 'red',
     height: 40,
@@ -116,5 +164,8 @@ const styles = StyleSheet.create({
     right: 0,
     left: 0,
     bottom: -100,
+  },
+  switchContainer: {
+    width: 180,
   },
 });
