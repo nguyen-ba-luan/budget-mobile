@@ -49,9 +49,13 @@ const Header = () => {
 
   const onEditLedger = useCallback(
     (ledger: ILedger) => () => {
-      navigation.navigate('AddLedger', {
-        ledgerId: ledger?.id,
-      });
+      onToggleModal();
+
+      setTimeout(() => {
+        navigation.navigate('AddLedger', {
+          ledgerId: ledger?.id,
+        });
+      }, 500);
     },
     [],
   );
