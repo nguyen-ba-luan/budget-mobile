@@ -92,6 +92,8 @@ const AddCategory = () => {
         <SubCategory
           subCategoryList={state.subCategoryList}
           onAddMore={handlers.ON_ADD_MORE_SUB_CATEGORY}
+          onEdit={handlers.ON_EDIT_SUB_CATEGORY}
+          onDelete={handlers.ON_DELETE_SUB_CATEGORY}
         />
       </ScrollView>
       <TextInput

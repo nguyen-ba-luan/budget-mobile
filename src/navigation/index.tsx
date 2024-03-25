@@ -75,6 +75,7 @@ export type RootStackParamList = {
   AddTransaction: {
     ledgerId: number;
     categoryId: number;
+    costTotal: number;
   };
   AddCategory: {
     ledgerId?: number;

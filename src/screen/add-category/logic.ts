@@ -15,6 +15,7 @@ import {generateUUID} from '../../util';
 
 export enum InputType {
   SUB_CATEGORY = 'SUB_CATEGORY',
+  EDIT_SUB_CATEGORY = 'EDIT_SUB_CATEGORY',
   NAME = 'NAME',
   BUDGET = 'BUDGET',
 }
@@ -38,6 +39,7 @@ export const useLogic = () => {
         cost: 0,
         period: PeriodType.MONTHLY,
       } as IBudget),
+    selectedSubCategory: {} as ISubCategory,
   });
 
   const inputRef = useRef<TextInput>(null);
@@ -78,6 +80,17 @@ export const useLogic = () => {
       inputRef.current?.focus();
       setState({inputType: InputType.SUB_CATEGORY, inputValue: ''});
     },
+    ON_EDIT_SUB_CATEGORY: (subCategory: ISubCategory) => {
+      inputRef.current?.focus();
+      setState({
+        inputType: InputType.EDIT_SUB_CATEGORY,
+        inputValue: subCategory?.name || '',
+        selectedSubCategory: subCategory,
+      });
+    },
+    ON_DELETE_SUB_CATEGORY: (subCategory: ISubCategory) => {
+      //TODO: ON_DELETE_SUB_CATEGORY
+    },
     ON_CHANGE_NAME: () => {
       inputRef.current?.focus();
       setState({inputType: InputType.NAME, inputValue: state.name});
@@ -96,6 +109,20 @@ export const useLogic = () => {
     },
     ON_SUBMIT_EDITING: () => {
       if (!state.inputValue || state.inputType === InputType.NAME) {
+        return;
+      }
+
+      if (state.inputType === InputType.EDIT_SUB_CATEGORY) {
+        setState(prevState => ({
+          subCategoryList: prevState.subCategoryList?.map(item =>
+            item?.id === prevState?.selectedSubCategory?.id
+              ? {
+                  ...item,
+                  name: state.inputValue,
+                }
+              : item,
+          ),
+        }));
         return;
       }
 

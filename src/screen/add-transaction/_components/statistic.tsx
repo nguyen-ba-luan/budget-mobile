@@ -1,25 +1,53 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React, {memo} from 'react';
-import {LedgerSelector, useRootStore} from '../../../store';
+import {CategorySelector, LedgerSelector, useRootStore} from '../../../store';
+import {RouteProp, useRoute} from '@react-navigation/native';
+import {RootStackParamList} from '../../../navigation';
+import {formatNumber} from '../../../util';
 
 const Statistic = () => {
+  const route = useRoute<RouteProp<RootStackParamList, 'AddTransaction'>>();
+  const categoryId = route?.params?.categoryId;
+
+  const category = useRootStore(
+    CategorySelector.selectLedgerCategory(categoryId),
+  );
+  const costTotal = route?.params?.costTotal;
+
   const selectedLedger = useRootStore(LedgerSelector.selectSelectedLedger);
-  const price = 931000;
+
+  const leftPrice = Number(category?.budget?.cost) - costTotal;
+
+  const percentSpent = Number(
+    (costTotal * 100) / category?.budget?.cost,
+  ).toFixed(1);
+
+  const percentLeft = Number(100 - Number(percentSpent)).toFixed(1);
+
+  const isWaring = costTotal > category?.budget?.cost;
 
   return (
     <View style={styles.container}>
-      <View style={styles.progress} />
+      <View
+        style={[
+          styles.progress,
+          {width: `${Number(percentSpent)}%`},
+          isWaring && styles.progressWarning,
+        ]}
+      />
       <View>
         <Text style={styles.totalSpentText}>{`${
           selectedLedger?.currency?.symbol
-        }${price.toLocaleString('vi')}`}</Text>
-        <Text style={styles.percentSpentText}>{'45,6% Spent'}</Text>
+        }${formatNumber(costTotal)}`}</Text>
+        <Text style={styles.percentSpentText}>{`${percentSpent}% Spent`}</Text>
       </View>
       <View>
         <Text style={styles.totalSpentText}>{`${
           selectedLedger?.currency?.symbol
-        }${price.toLocaleString('vi')}`}</Text>
-        <Text style={styles.percentSpentText}>{'45,6% Left'}</Text>
+        }${formatNumber(leftPrice)}`}</Text>
+        <Text style={styles.percentSpentText}>{`${percentLeft}% ${
+          isWaring ? 'Exceeding' : 'Left'
+        }`}</Text>
       </View>
     </View>
   );
@@ -51,5 +79,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '60%',
     backgroundColor: 'mediumseagreen',
+  },
+  progressWarning: {
+    backgroundColor: 'tomato',
   },
 });

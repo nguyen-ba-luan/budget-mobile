@@ -11,7 +11,7 @@ import {
   ISubCategory,
 } from '../../constant';
 import {useEffect, useRef} from 'react';
-import {TextInput} from 'react-native';
+import {Alert, TextInput} from 'react-native';
 import {omit, uniq} from 'ramda';
 
 export const useLogic = () => {
@@ -30,7 +30,7 @@ export const useLogic = () => {
 
   const inputRef = useRef<TextInput>(null);
 
-  const {addLedger} = useRootStore();
+  const {addLedger, deleteLedger} = useRootStore();
 
   useEffect(() => {
     if (!route.params?.color) {
@@ -130,11 +130,32 @@ export const useLogic = () => {
       });
       navigation.goBack();
     },
+
+    ON_DELETE_LEDGER: () => {
+      if (!ledgerId) {
+        return;
+      }
+
+      Alert.alert('Confirm', 'Are you sure?', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            deleteLedger(ledgerId);
+            navigation.goBack();
+          },
+        },
+      ]);
+    },
   };
 
   return {
     state,
     handlers,
     inputRef,
+    ledgerId,
   };
 };

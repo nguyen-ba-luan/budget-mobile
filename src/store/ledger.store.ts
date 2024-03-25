@@ -19,6 +19,7 @@ export interface LedgerState {
     [id: number]: ILedger;
   };
   addLedger: (ledger: AddLedgerPayload) => void;
+  deleteLedger: (ledgerId: number) => void;
   selectLedger: (id: number) => void;
 }
 
@@ -59,6 +60,7 @@ export const createLedgerSlice: StateCreator<
     })),
   addLedger: (payload: AddLedgerPayload) =>
     set((state: StoreState) => ({
+      selectedLedgerId: payload?.id,
       ledgerIdList: uniq([...state.ledgerIdList, payload.id]),
       ledgerJson: {
         ...state.ledgerJson,
@@ -73,4 +75,18 @@ export const createLedgerSlice: StateCreator<
         ...payload?.subCategoryJson,
       },
     })),
+  deleteLedger: (ledgerId: number) =>
+    set((state: StoreState) => {
+      const newLedgerIdList = state.ledgerIdList?.filter(
+        item => item !== ledgerId,
+      );
+      return {
+        selectedLedgerId:
+          state?.selectedLedgerId === ledgerId
+            ? newLedgerIdList[0]
+            : state?.selectedLedgerId,
+        ledgerIdList: newLedgerIdList,
+        ledgerJson: omit([ledgerId], state.ledgerJson),
+      };
+    }),
 });

@@ -14,7 +14,7 @@ import {useKeyboard} from '../../hook';
 import {formatNumber} from '../../util';
 
 const AddLedger = () => {
-  const {handlers, state, inputRef} = useLogic();
+  const {handlers, state, inputRef, ledgerId} = useLogic();
   const {keyboardShown, keyboardHeight} = useKeyboard();
 
   return (
@@ -82,10 +82,14 @@ const AddLedger = () => {
           <Icon name="pluscircleo" size={22} />
           <Text style={{fontSize: 18}}>Add Category</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.deleteBtn} activeOpacity={0.8}>
-          <Icon name="delete" color={'red'} size={26} />
-        </TouchableOpacity>
+        {Boolean(ledgerId) && (
+          <TouchableOpacity
+            style={styles.deleteBtn}
+            activeOpacity={0.8}
+            onPress={handlers.ON_DELETE_LEDGER}>
+            <Icon name="delete" color={'red'} size={26} />
+          </TouchableOpacity>
+        )}
       </ScrollView>
       <TextInput
         ref={inputRef}

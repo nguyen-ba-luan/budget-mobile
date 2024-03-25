@@ -12,14 +12,14 @@ import {InputType, useAddTransactionLogic} from './logic';
 import {useKeyboard} from '../../hook';
 
 const AddTransaction = () => {
-  const {handlers, state, inputRef} = useAddTransactionLogic();
+  const {handlers, state, inputRef, category} = useAddTransactionLogic();
   const {keyboardShown, keyboardHeight} = useKeyboard();
 
   return (
     <View style={styles.container}>
       <Header />
       <Cost cost={state.cost} />
-      <Statistic />
+      {category?.budget?.cost > 0 && <Statistic />}
       <SubCategory
         selectedSubCategoryId={state.selectedSubCategoryId}
         onSelect={handlers.ON_SELECT_SUB_CATEGORY}

@@ -118,5 +118,6 @@ export const useAddTransactionLogic = () => {
     handlers,
     state,
     inputRef,
+    category,
   };
 };

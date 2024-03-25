@@ -1,9 +1,10 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {memo} from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
-import {useNavigation} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../navigation';
+import {LedgerSelector, useRootStore} from '../../../store';
 
 interface IProps {
   onSave(): void;
@@ -13,6 +14,10 @@ const Header = (props: IProps) => {
   const {onSave} = props;
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'AddLedger'>>();
+  const ledgerId = route?.params?.ledgerId;
+
+  const ledgerDetail = useRootStore(LedgerSelector.selectLedgerById(ledgerId));
 
   return (
     <View style={styles.container}>
@@ -22,7 +27,7 @@ const Header = (props: IProps) => {
         activeOpacity={0.8}>
         <Icon name={'close'} size={22} color={'black'} />
       </TouchableOpacity>
-      <Text style={styles.title}>{'Ledger'}</Text>
+      <Text style={styles.title}>{ledgerDetail?.name || 'Ledger'}</Text>
       <TouchableOpacity
         style={styles.saveBtn}
         onPress={onSave}

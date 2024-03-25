@@ -41,9 +41,10 @@ const CategoryList = () => {
   const [activeSections, setActiveSections] = useState([0, 1]);
 
   const onAddTransaction = useCallback(
-    (categoryId: number) => () => {
+    (categoryId: number, costTotal: number) => () => {
       navigation.navigate('AddTransaction', {
         categoryId,
+        costTotal,
         ledgerId: selectedLedger?.id,
       });
     },
@@ -104,8 +105,11 @@ const CategoryList = () => {
                   <TouchableOpacity
                     key={category.id}
                     activeOpacity={0.8}
-                    onPress={onAddTransaction(category.id)}
-                    style={styles.itemContainer}>
+                    onPress={onAddTransaction(category.id, category?.costTotal)}
+                    style={[
+                      styles.itemContainer,
+                      {backgroundColor: category?.color},
+                    ]}>
                     <Text>{category?.name}</Text>
                     <Icon name="team" color={'deeppink'} size={30} />
                     <Text>{`${selectedLedger?.currency?.symbol}${formatNumber(
