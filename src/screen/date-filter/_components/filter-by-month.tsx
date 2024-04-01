@@ -4,13 +4,18 @@ import {range} from 'ramda';
 import {Metrics} from '../../../theme/metric';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {DateFilterSelector, useRootStore} from '../../../store';
-import dayjs from 'dayjs';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../../../navigation';
 
 const FilterByMonth = () => {
   const selectMonthlyFilter = useRootStore(
     DateFilterSelector.selectMonthlyFilter,
   );
   const {changeMonthlyFilterMonth, changeMonthlyFilterYear} = useRootStore();
+
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const onIncreaseYear = () => {
     changeMonthlyFilterYear(Number(selectMonthlyFilter?.year + 1));
@@ -22,6 +27,7 @@ const FilterByMonth = () => {
 
   const onSelectMonth = (month: number) => () => {
     changeMonthlyFilterMonth(month);
+    navigation.goBack();
   };
 
   return (

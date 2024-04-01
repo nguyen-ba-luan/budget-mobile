@@ -36,16 +36,18 @@ const Header = () => {
     setTimeout(() => {
       navigation.navigate('AddLedger');
     }, 500);
-  }, []);
+  }, [navigation, onToggleModal]);
 
   const onSelectLedger = useCallback(
     (id: number) => () => {
-      if (selectedLedger?.id === id) return;
+      if (selectedLedger?.id === id) {
+        return;
+      }
 
       selectLedger(id);
       onToggleModal();
     },
-    [selectLedger, selectedLedger],
+    [onToggleModal, selectLedger, selectedLedger?.id],
   );
 
   const onEditLedger = useCallback(
@@ -58,7 +60,7 @@ const Header = () => {
         });
       }, 500);
     },
-    [],
+    [navigation, onToggleModal],
   );
 
   return (
