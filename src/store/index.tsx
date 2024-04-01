@@ -5,15 +5,18 @@ import {LedgerState, createLedgerSlice} from './ledger.store';
 import {TransactionState, createTransactionSlice} from './transaction.store';
 import {CategoryState, createCategorySlice} from './category.store';
 import {SubCategoryState, createSubCategorySlice} from './sub-category.store';
+import {DateFilterState, createDateFilterSlice} from './date-filter.store';
 
 export * from './ledger.store';
 export * from './category.store';
 export * from './transaction.store';
+export * from './date-filter.store';
 
 export type StoreState = LedgerState &
   TransactionState &
   CategoryState &
-  SubCategoryState;
+  SubCategoryState &
+  DateFilterState;
 
 export const useRootStore = create<StoreState>()(
   persist(
@@ -22,6 +25,7 @@ export const useRootStore = create<StoreState>()(
       ...createTransactionSlice(...a),
       ...createCategorySlice(...a),
       ...createSubCategorySlice(...a),
+      ...createDateFilterSlice(...a),
     }),
     {
       name: 'root-storage',

@@ -8,6 +8,7 @@ import AddCategory from '../screen/add-category';
 import {IBudget, IFullLedgerCategory} from '../constant';
 import ChooseColor from '../screen/choose-color';
 import AddBudget from '../screen/add-budget';
+import DateFilter from '../screen/date-filter';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -55,6 +56,14 @@ function AppNavigation() {
           name="AddBudget"
           component={AddBudget}
         />
+        <Stack.Screen
+          options={{
+            presentation: 'transparentModal',
+            animation: 'fade',
+          }}
+          name="DateFilter"
+          component={DateFilter}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -93,5 +102,8 @@ export type RootStackParamList = {
   AddBudget: {
     previousScreen: string;
     budget?: IBudget;
+  };
+  DateFilter: {
+    previousScreen: string;
   };
 };

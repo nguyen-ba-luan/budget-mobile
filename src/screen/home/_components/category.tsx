@@ -85,7 +85,7 @@ const CategoryList = () => {
         renderHeader={(content, _, isActive) => {
           return (
             <View style={styles.headerContainer}>
-              <Text>{content?.type}</Text>
+              <Text style={styles.headerType}>{content?.type}</Text>
               <Text style={styles.headerTotal}>{`${
                 selectedLedger?.currency?.symbol || '₫'
               }${formatNumber(content?.total || 0)}`}</Text>
@@ -110,11 +110,11 @@ const CategoryList = () => {
                       styles.itemContainer,
                       {backgroundColor: category?.color},
                     ]}>
-                    <Text>{category?.name}</Text>
+                    <Text style={styles.categoryName}>{category?.name}</Text>
                     <Icon name="team" color={'deeppink'} size={30} />
-                    <Text>{`${selectedLedger?.currency?.symbol}${formatNumber(
-                      category?.costTotal,
-                    )}`}</Text>
+                    <Text style={styles.costTotal}>{`${
+                      selectedLedger?.currency?.symbol
+                    }${formatNumber(category?.costTotal)}`}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -143,20 +143,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingHorizontal: 15,
+    gap: 15,
   },
   itemContainer: {
     width: (Metrics.screenWidth - 60) / 3,
     backgroundColor: 'lightpink',
-    marginBottom: 15,
-    marginRight: 10,
     borderRadius: 12,
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 15,
     gap: 15,
   },
+  headerType: {
+    fontSize: 18,
+  },
   headerTotal: {
     fontWeight: '600',
+    fontSize: 18,
+  },
+  categoryName: {
+    fontSize: 18,
+  },
+  costTotal: {
+    // fontSize: 18,
   },
 });
 

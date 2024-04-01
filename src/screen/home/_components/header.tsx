@@ -15,6 +15,7 @@ import {isNilOrEmpty} from 'ramda-adjunct';
 import {ILedger} from '../../../constant';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../navigation';
+import Filter from './filter';
 
 const Header = () => {
   const navigation =
@@ -75,6 +76,8 @@ const Header = () => {
         </Text>
         <Icon name={'caretdown'} size={12} color={'slateblue'} />
       </TouchableOpacity>
+
+      <Filter />
 
       <Modal transparent visible={visible} presentationStyle="overFullScreen">
         <TouchableWithoutFeedback onPress={onToggleModal}>
@@ -138,13 +141,22 @@ const Header = () => {
 export default memo(Header);
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
+  },
   ledgerBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
+    paddingHorizontal: 12,
     gap: 4,
     alignSelf: 'baseline',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
   },
   modalContainer: {
     flex: 1,
