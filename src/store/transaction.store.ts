@@ -2,6 +2,7 @@ import {StateCreator} from 'zustand';
 import {ITransaction} from '../constant';
 import {LedgerState} from './ledger.store';
 import {StoreState} from '.';
+import {getRangeFilter, outOfRange} from '../util';
 
 export interface TransactionState {
   transactionIdList: {
@@ -18,6 +19,25 @@ export const TransactionSelector = {
     state.transactionIdList[state.selectedLedgerId]?.map(
       item => state.transactionJson[item],
     ) || [],
+  selectTransactionListForHome: (state: StoreState) => {
+    const result: ITransaction[] = [];
+
+    const transactionIdList =
+      state.transactionIdList[state.selectedLedgerId] || [];
+
+    const {from, to} = getRangeFilter(state);
+
+    for (const transactionId of transactionIdList) {
+      const transaction = state.transactionJson[transactionId];
+      if (outOfRange(from, to, transaction.time)) {
+        continue;
+      }
+
+      result.push(transaction);
+    }
+
+    return result;
+  },
 };
 
 export const createTransactionSlice: StateCreator<

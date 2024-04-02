@@ -22,6 +22,11 @@ const Filter = () => {
   const monthlyFilter = useRootStore(DateFilterSelector.selectMonthlyFilter);
   const yearlyFilter = useRootStore(DateFilterSelector.selectYearlyFilter);
   const customFilter = useRootStore(DateFilterSelector.selectCustomFilter);
+  const {
+    changeYearlyFilter,
+    changeMonthlyFilterMonth,
+    changeMonthlyFilterYear,
+  } = useRootStore();
 
   const onOpenDateFilter = useCallback(() => {
     navigation.navigate('DateFilter', {
@@ -34,15 +39,61 @@ const Filter = () => {
     [customFilter, monthlyFilter, selectedType, yearlyFilter],
   );
 
+  const disableChange = selectedType === FilterType.CUSTOM;
+
+  const onIncreaseYear = () => {
+    if (selectedType === FilterType.YEARLY) {
+      changeYearlyFilter(Number(yearlyFilter?.year + 1));
+      return;
+    }
+
+    if (selectedType === FilterType.MONTHLY) {
+      const nextMonth = dayjs()
+        .year(monthlyFilter.year)
+        .month(monthlyFilter.month - 1)
+        .add(1, 'month');
+
+      changeMonthlyFilterMonth(nextMonth.get('month') + 1);
+      changeMonthlyFilterYear(nextMonth.get('year'));
+      return;
+    }
+  };
+
+  const onDecreaseYear = () => {
+    if (selectedType === FilterType.YEARLY) {
+      changeYearlyFilter(Number(yearlyFilter?.year - 1));
+      return;
+    }
+
+    if (selectedType === FilterType.MONTHLY) {
+      const prevMonth = dayjs()
+        .year(monthlyFilter.year)
+        .month(monthlyFilter.month - 1)
+        .subtract(1, 'month');
+
+      changeMonthlyFilterMonth(prevMonth.get('month') + 1);
+      changeMonthlyFilterYear(prevMonth.get('year'));
+      return;
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity activeOpacity={0.8}>
+      <TouchableOpacity
+        hitSlop={15}
+        activeOpacity={0.8}
+        onPress={onDecreaseYear}
+        disabled={disableChange}>
         <Icon name="left" size={12} color={'slateblue'} />
       </TouchableOpacity>
       <TouchableOpacity activeOpacity={0.8} onPress={onOpenDateFilter}>
         <Text style={styles.headerText}>{title}</Text>
       </TouchableOpacity>
-      <TouchableOpacity activeOpacity={0.8}>
+      <TouchableOpacity
+        hitSlop={15}
+        activeOpacity={0.8}
+        onPress={onIncreaseYear}
+        disabled={disableChange}>
         <Icon name="right" size={12} color={'slateblue'} />
       </TouchableOpacity>
     </View>

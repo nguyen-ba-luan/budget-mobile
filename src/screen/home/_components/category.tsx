@@ -27,7 +27,7 @@ const CategoryList = () => {
 
   const selectedLedger = useRootStore(LedgerSelector.selectSelectedLedger);
   const transactionList = useRootStore(
-    TransactionSelector.selectTransactionList,
+    TransactionSelector.selectTransactionListForHome,
   );
   const {
     totalExpenses,
