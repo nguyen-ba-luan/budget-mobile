@@ -7,21 +7,34 @@ import {
 import React from 'react';
 import {RootStackParamList} from '../../navigation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {FilterByMonth, TypeList, FilterCustom} from './_components';
+import {
+  FilterByMonth,
+  TypeList,
+  FilterCustom,
+  FilterByWeek,
+  FilterByYear,
+} from './_components';
 import {DateFilterSelector, FilterType, useRootStore} from '../../store';
+
+const ComponentJson = {
+  [FilterType.WEEKLY]: FilterByWeek,
+  [FilterType.MONTHLY]: FilterByMonth,
+  [FilterType.YEARLY]: FilterByYear,
+  [FilterType.CUSTOM]: FilterCustom,
+};
 
 const DateFilter = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'DateFilter'>) => {
   const selectedType = useRootStore(DateFilterSelector.selectSelectedType);
+  const ChildComponent = ComponentJson[selectedType];
 
   return (
     <TouchableWithoutFeedback onPress={navigation.goBack}>
       <SafeAreaView style={styles.container}>
         <TouchableOpacity style={styles.wrapper} activeOpacity={1}>
           <TypeList />
-          {selectedType === FilterType.MONTHLY && <FilterByMonth />}
-          {selectedType === FilterType.CUSTOM && <FilterCustom />}
+          <ChildComponent />
         </TouchableOpacity>
       </SafeAreaView>
     </TouchableWithoutFeedback>

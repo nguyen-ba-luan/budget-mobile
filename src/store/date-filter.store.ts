@@ -15,6 +15,9 @@ export interface DateFilterState {
     year: number;
     month: number;
   };
+  yearlyFilter: {
+    year: number;
+  };
   customFilter: {
     from: string;
     to: string;
@@ -22,12 +25,14 @@ export interface DateFilterState {
   changeFilterType(type: FilterType): void;
   changeMonthlyFilterYear(year: number): void;
   changeMonthlyFilterMonth(month: number): void;
+  changeYearlyFilter(year: number): void;
   changeCustomFilter(data: DateFilterState['customFilter']): void;
 }
 
 export const DateFilterSelector = {
   selectSelectedType: (state: StoreState) => state.selectedType,
   selectMonthlyFilter: (state: StoreState) => state.monthlyFilter,
+  selectYearlyFilter: (state: StoreState) => state.yearlyFilter,
   selectCustomFilter: (state: StoreState) => state.customFilter,
 };
 
@@ -41,6 +46,9 @@ export const createDateFilterSlice: StateCreator<
   monthlyFilter: {
     year: dayjs().get('year'),
     month: dayjs().get('month') + 1,
+  },
+  yearlyFilter: {
+    year: dayjs().get('year'),
   },
   customFilter: {
     from: dayjs().startOf('month').toISOString(),
@@ -62,6 +70,13 @@ export const createDateFilterSlice: StateCreator<
       monthlyFilter: {
         ...state.monthlyFilter,
         month,
+      },
+    })),
+  changeYearlyFilter: year =>
+    set(state => ({
+      yearlyFilter: {
+        ...state.yearlyFilter,
+        year,
       },
     })),
   changeCustomFilter: data =>

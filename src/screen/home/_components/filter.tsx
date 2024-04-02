@@ -20,6 +20,7 @@ const Filter = () => {
 
   const selectedType = useRootStore(DateFilterSelector.selectSelectedType);
   const monthlyFilter = useRootStore(DateFilterSelector.selectMonthlyFilter);
+  const yearlyFilter = useRootStore(DateFilterSelector.selectYearlyFilter);
   const customFilter = useRootStore(DateFilterSelector.selectCustomFilter);
 
   const onOpenDateFilter = useCallback(() => {
@@ -29,8 +30,8 @@ const Filter = () => {
   }, [navigation, route?.name]);
 
   const title = useMemo(
-    () => getTitle({selectedType, customFilter, monthlyFilter}),
-    [customFilter, monthlyFilter, selectedType],
+    () => getTitle({selectedType, customFilter, monthlyFilter, yearlyFilter}),
+    [customFilter, monthlyFilter, selectedType, yearlyFilter],
   );
 
   return (
@@ -53,10 +54,10 @@ export default memo(Filter);
 const getTitle = (
   input: Pick<
     DateFilterState,
-    'selectedType' | 'monthlyFilter' | 'customFilter'
+    'selectedType' | 'monthlyFilter' | 'yearlyFilter' | 'customFilter'
   >,
 ) => {
-  const {customFilter, monthlyFilter, selectedType} = input;
+  const {customFilter, monthlyFilter, selectedType, yearlyFilter} = input;
 
   if (selectedType === FilterType.CUSTOM) {
     return `${formatDate(customFilter?.from, 'DD-MM')} - ${formatDate(
@@ -90,6 +91,14 @@ const getTitle = (
     return `${from} - ${to}`;
   }
 
+  if (selectedType === FilterType.YEARLY) {
+    const currentYear = dayjs().get('year');
+
+    return currentYear === yearlyFilter?.year
+      ? 'This Year'
+      : yearlyFilter?.year;
+  }
+
   return selectedType;
 };
 
@@ -102,5 +111,6 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 16,
     fontWeight: '600',
+    textTransform: 'capitalize',
   },
 });

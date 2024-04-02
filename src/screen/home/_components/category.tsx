@@ -92,7 +92,7 @@ const CategoryList = () => {
               <Icon
                 name={isActive ? 'downcircle' : 'upcircle'}
                 color={'plum'}
-                size={12}
+                size={14}
               />
             </View>
           );
