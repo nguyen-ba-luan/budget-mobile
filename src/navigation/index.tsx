@@ -9,6 +9,7 @@ import {IBudget, IFullLedgerCategory} from '../constant';
 import ChooseColor from '../screen/choose-color';
 import AddBudget from '../screen/add-budget';
 import DateFilter from '../screen/date-filter';
+import ChooseIcon from '../screen/choose-icon';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -51,6 +52,14 @@ function AppNavigation() {
         />
         <Stack.Screen
           options={{
+            presentation: 'formSheet',
+            gestureEnabled: false,
+          }}
+          name="ChooseIcon"
+          component={ChooseIcon}
+        />
+        <Stack.Screen
+          options={{
             presentation: 'transparentModal',
           }}
           name="AddBudget"
@@ -77,6 +86,7 @@ export type RootStackParamList = {
     ledgerId?: number;
     /** PARAMS FOR SET PARAMS FROM OTHER SCREEN */
     color?: string;
+    icon?: string;
     category?: IFullLedgerCategory;
     categoryId?: number;
     /** PARAMS FOR SET PARAMS FROM OTHER SCREEN */
@@ -92,11 +102,16 @@ export type RootStackParamList = {
     previousScreen: string;
     /** PARAMS FOR SET PARAMS FROM OTHER SCREEN */
     color?: string;
+    icon?: string;
     budget?: IBudget;
     /** PARAMS FOR SET PARAMS FROM OTHER SCREEN */
   };
   ChooseColor: {
     color?: string;
+    previousScreen: string;
+  };
+  ChooseIcon: {
+    icon?: string;
     previousScreen: string;
   };
   AddBudget: {

@@ -26,6 +26,7 @@ export const useLogic = () => {
     name: ledgerDetail?.name || '',
     categoryList: ledgerDetail?.categoryList || ([] as IFullLedgerCategory[]),
     color: ledgerDetail?.color || 'yellow',
+    icon: ledgerDetail?.icon || 'smile-circle',
   });
 
   const inputRef = useRef<TextInput>(null);
@@ -40,6 +41,15 @@ export const useLogic = () => {
     setState({color: route.params?.color});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route.params?.color]);
+
+  useEffect(() => {
+    if (!route.params?.icon) {
+      return;
+    }
+
+    setState({icon: route.params?.icon});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route.params?.icon]);
 
   useEffect(() => {
     if (!route.params?.category) {
@@ -63,6 +73,12 @@ export const useLogic = () => {
     ON_SELECT_COLOR: () => {
       navigation.navigate('ChooseColor', {
         previousScreen: route?.name,
+      });
+    },
+    ON_SELECT_ICON: () => {
+      navigation.navigate('ChooseIcon', {
+        previousScreen: route?.name,
+        icon: state.icon,
       });
     },
     ON_ADD_CATEGORY: () => {
@@ -126,7 +142,7 @@ export const useLogic = () => {
         name: state.name || 'Ledger',
         color: state.color,
         currency: CURRENCY[1],
-        icon: 'icon',
+        icon: state?.icon,
       });
       navigation.goBack();
     },

@@ -44,6 +44,15 @@ const AddLedger = () => {
           />
         </View>
         <View style={styles.rowItem}>
+          <Text style={styles.label}>Icon</Text>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.icon}
+            onPress={handlers.ON_SELECT_ICON}>
+            <Icon name={state?.icon} size={20} color={'gray'} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.rowItem}>
           <Text style={styles.label}>Category</Text>
           <Text style={styles.valueText}>{''}</Text>
         </View>
@@ -60,7 +69,7 @@ const AddLedger = () => {
                   styles.categoryIconWrapper,
                   {backgroundColor: category?.color},
                 ]}>
-                <Icon name="smile-circle" color={'white'} size={18} />
+                <Icon name={category.icon} color={'white'} size={18} />
               </View>
               <Text style={{fontSize: 18}}>{category?.name}</Text>
             </View>
@@ -143,10 +152,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'khaki',
   },
   color: {
-    backgroundColor: 'red',
     height: 40,
     aspectRatio: 1,
     borderRadius: 20,
+  },
+  icon: {
+    height: 40,
+    aspectRatio: 1,
+    borderRadius: 20,
+    backgroundColor: 'whitesmoke',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   addCategoryWrapper: {
     flexDirection: 'row',

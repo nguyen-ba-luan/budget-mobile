@@ -32,6 +32,7 @@ export const useLogic = () => {
     inputType: '' as InputType,
     inputValue: '',
     color: category?.color || 'yellow',
+    icon: category?.icon || 'smile-circle',
     type: category?.type || LedgerCategoryType.EXPENSES,
     budget:
       category?.budget ||
@@ -54,6 +55,15 @@ export const useLogic = () => {
   }, [route.params?.color]);
 
   useEffect(() => {
+    if (!route.params?.icon) {
+      return;
+    }
+
+    setState({icon: route.params?.icon});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route.params?.icon]);
+
+  useEffect(() => {
     if (!route.params?.budget) {
       return;
     }
@@ -66,6 +76,12 @@ export const useLogic = () => {
     ON_SELECT_COLOR: () => {
       navigation.navigate('ChooseColor', {
         previousScreen: route?.name,
+      });
+    },
+    ON_SELECT_ICON: () => {
+      navigation.navigate('ChooseIcon', {
+        previousScreen: route?.name,
+        icon: state.icon,
       });
     },
     ON_CHANGE_BUDGET: () => {
@@ -141,7 +157,7 @@ export const useLogic = () => {
         name: state.name || 'Category',
         type: state.type,
         color: state.color,
-        icon: 'icon',
+        icon: state.icon,
         budget: state.budget,
         subCategoryList: state.subCategoryList,
       };

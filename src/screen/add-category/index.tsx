@@ -15,6 +15,7 @@ import SwitchSelector from 'react-native-switch-selector';
 import {LedgerCategoryType} from '../../constant';
 import {formatNumber} from '../../util';
 import {useIsFocused} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 const AddCategory = () => {
   const {handlers, state, inputRef} = useLogic();
@@ -46,6 +47,15 @@ const AddCategory = () => {
             activeOpacity={0.8}
             onPress={handlers.ON_SELECT_COLOR}
           />
+        </View>
+        <View style={styles.rowItem}>
+          <Text style={styles.label}>Icon</Text>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.icon}
+            onPress={handlers.ON_SELECT_ICON}>
+            <Icon name={state?.icon} size={20} color={'gray'} />
+          </TouchableOpacity>
         </View>
         <View style={styles.rowItem}>
           <Text style={styles.label}>Type</Text>
@@ -157,6 +167,14 @@ const styles = StyleSheet.create({
     height: 40,
     aspectRatio: 1,
     borderRadius: 20,
+  },
+  icon: {
+    height: 40,
+    aspectRatio: 1,
+    borderRadius: 20,
+    backgroundColor: 'whitesmoke',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   input: {
     position: 'absolute',

@@ -111,7 +111,9 @@ const CategoryList = () => {
                       {backgroundColor: category?.color},
                     ]}>
                     <Text style={styles.categoryName}>{category?.name}</Text>
-                    <Icon name="team" color={'deeppink'} size={30} />
+                    <View style={styles.wrapperCategoryIcon}>
+                      <Icon name={category.icon} color={'gray'} size={20} />
+                    </View>
                     <Text style={styles.costTotal}>{`${
                       selectedLedger?.currency?.symbol
                     }${formatNumber(category?.costTotal)}`}</Text>
@@ -163,6 +165,14 @@ const styles = StyleSheet.create({
   },
   categoryName: {
     fontSize: 18,
+  },
+  wrapperCategoryIcon: {
+    height: 40,
+    aspectRatio: 1,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'whitesmoke',
   },
   costTotal: {
     // fontSize: 18,

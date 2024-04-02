@@ -99,11 +99,7 @@ const Header = () => {
                           !active && styles.ledgerItemLeftInActive,
                         ]}
                       />
-                      <Icon
-                        name={'pay-circle1'}
-                        size={18}
-                        color={'dodgerblue'}
-                      />
+                      <Icon name={ledger.icon} size={18} color={ledger.color} />
                       <Text style={styles.ledgerName}>{ledger?.name}</Text>
                     </View>
                     <TouchableOpacity
