@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {isArray} from 'ramda-adjunct';
 import {DateFilterState, FilterType} from '../store';
+import {ITransaction, LedgerCategoryType} from '../constant';
 var isBetween = require('dayjs/plugin/isBetween');
 dayjs.extend(isBetween);
 
@@ -84,4 +85,42 @@ export const outOfRange = (from: string, to: string, date: string) => {
 
   // @ts-ignore
   return !checkDate.isBetween(fromDate, toDate, null, '[]');
+};
+
+export const groupAndSortTransactions = (
+  transactions: ITransaction[],
+): Array<{
+  type: LedgerCategoryType;
+  date: string;
+  totalCost: number;
+  transactionList: ITransaction[];
+}> => {
+  const grouped = new Map<string, ITransaction[]>();
+
+  transactions.forEach(transaction => {
+    const date = formatDate(transaction.time);
+    const key = `${transaction.type}--${date}`;
+
+    if (!grouped.has(key)) {
+      grouped.set(key, []);
+    }
+    grouped.get(key)!.push(transaction);
+  });
+
+  const result = Array.from(grouped, ([key, transactionList]) => {
+    const [type, date] = key.split('--');
+    const totalCost = transactionList.reduce(
+      (sum, transaction) => sum + transaction.cost,
+      0,
+    );
+    return {date, totalCost, transactionList, type: type as LedgerCategoryType};
+  });
+
+  result.sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return dateA.getTime() - dateB.getTime();
+  });
+
+  return result;
 };

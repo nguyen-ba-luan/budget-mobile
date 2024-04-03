@@ -71,7 +71,7 @@ export interface ITransaction {
   cost: number;
   type: LedgerCategoryType;
   categoryId: number;
-  subCategoryId: number | null;
+  subCategoryId?: number;
   time: string;
   note: string;
 }

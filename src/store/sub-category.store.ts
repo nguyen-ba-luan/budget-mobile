@@ -2,7 +2,7 @@ import {StateCreator} from 'zustand';
 import {ISubCategory} from '../constant';
 import {LedgerState} from './ledger.store';
 import {produce} from 'immer';
-import {CategoryState} from '.';
+import {CategoryState, StoreState} from '.';
 
 export interface SubCategoryState {
   subCategoryJson: {
@@ -13,6 +13,11 @@ export interface SubCategoryState {
     categoryId: number;
   }) => void;
 }
+
+export const SubCategorySelector = {
+  selectSubCategoryById: (subCategoryId?: number) => (state: StoreState) =>
+    subCategoryId ? state.subCategoryJson[subCategoryId] : ({} as ISubCategory),
+};
 
 export const createSubCategorySlice: StateCreator<
   SubCategoryState & LedgerState & CategoryState,
