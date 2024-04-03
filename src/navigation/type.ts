@@ -45,6 +45,9 @@ export type RootStackParamList = {
 
 export type StatisticTransactionParamList = {
   StatisticTransaction: undefined;
+  TransactionDetail: {
+    transactionId: number;
+  };
   DateFilter: {
     previousScreen: string;
   };

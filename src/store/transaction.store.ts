@@ -38,6 +38,8 @@ export const TransactionSelector = {
 
     return result;
   },
+  selectTransactionById: (transactionId: number) => (state: StoreState) =>
+    transactionId ? state.transactionJson[transactionId] : ({} as ITransaction),
 };
 
 export const createTransactionSlice: StateCreator<

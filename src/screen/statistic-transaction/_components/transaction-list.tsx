@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {memo} from 'react';
+import React, {memo, useCallback} from 'react';
 import {
   CategorySelector,
   TransactionSelector,
@@ -21,6 +21,9 @@ import {
 import {ITransaction, LedgerCategoryType} from '../../../constant';
 import {SubCategorySelector} from '../../../store/sub-category.store';
 import Icon from 'react-native-vector-icons/AntDesign';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {useNavigation} from '@react-navigation/native';
+import {StatisticTransactionParamList} from '../../../navigation';
 
 const TransactionList = () => {
   const transactionList = useRootStore(
@@ -83,6 +86,9 @@ const Item = ({
 };
 
 const TransactionItem = ({transaction}: {transaction: ITransaction}) => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<StatisticTransactionParamList>>();
+
   const isExpenses = transaction.type === LedgerCategoryType.EXPENSES;
 
   const category = useRootStore(
@@ -91,8 +97,18 @@ const TransactionItem = ({transaction}: {transaction: ITransaction}) => {
   const subCategory = useRootStore(
     SubCategorySelector.selectSubCategoryById(transaction.subCategoryId),
   );
+
+  const onDetail = useCallback(() => {
+    navigation.navigate('TransactionDetail', {
+      transactionId: transaction?.id,
+    });
+  }, [navigation, transaction?.id]);
+
   return (
-    <TouchableOpacity activeOpacity={0.8} style={styles.rowTransaction}>
+    <TouchableOpacity
+      activeOpacity={0.8}
+      style={styles.rowTransaction}
+      onPress={onDetail}>
       <View style={styles.rowIcon}>
         <View style={[styles.wrapperIcon, {backgroundColor: category?.color}]}>
           <Icon name={category.icon} color={'white'} />
@@ -100,6 +116,7 @@ const TransactionItem = ({transaction}: {transaction: ITransaction}) => {
         <View>
           <Text style={styles.categoryName}>{category.name}</Text>
           {!!subCategory.name && <Text>{subCategory.name}</Text>}
+          {!!transaction.note && <Text>{transaction.note}</Text>}
         </View>
       </View>
       <View>

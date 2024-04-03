@@ -3,6 +3,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StatisticTransactionParamList} from './type';
 import StatisticTransaction from '../screen/statistic-transaction';
 import DateFilter from '../screen/date-filter';
+import TransactionDetail from '../screen/transaction-detail';
 
 export * from './type';
 
@@ -17,6 +18,14 @@ const StatisticTransactionStack = () => {
       <Stack.Screen
         name="StatisticTransaction"
         component={StatisticTransaction}
+      />
+      <Stack.Screen
+        options={{
+          presentation: 'formSheet',
+          gestureEnabled: false,
+        }}
+        name="TransactionDetail"
+        component={TransactionDetail}
       />
       <Stack.Screen
         options={{
