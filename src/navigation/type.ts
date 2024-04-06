@@ -52,3 +52,8 @@ export type StatisticTransactionParamList = {
     previousScreen: string;
   };
 };
+
+export type AuthParamList = {
+  Login: undefined;
+  SignUp: undefined;
+};
