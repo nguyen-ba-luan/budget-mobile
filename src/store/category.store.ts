@@ -3,6 +3,7 @@ import {IFullLedgerCategory, ILedgerCategory} from '../constant';
 import {LedgerState} from './ledger.store';
 import {StoreState} from '.';
 import {omit} from 'ramda';
+import {addCategory} from '../service/api';
 
 export interface CategoryState {
   categoryJson: {
@@ -30,11 +31,13 @@ export const createCategorySlice: StateCreator<
   CategoryState
 > = set => ({
   categoryJson: {},
-  addCategory: ({category, ledgerId}) =>
+  addCategory: async ({category, ledgerId}) => {
+    const id = await addCategory(category, ledgerId);
+    const categoryId = id || category?.id;
+
     set(state => {
-      const categoryIdList = state.ledgerJson[ledgerId]?.categoryIdList?.concat(
-        category?.id,
-      );
+      const categoryIdList =
+        state.ledgerJson[ledgerId]?.categoryIdList?.concat(categoryId);
 
       return {
         ledgerJson: {
@@ -46,8 +49,9 @@ export const createCategorySlice: StateCreator<
         },
         categoryJson: {
           ...state.categoryJson,
-          [category.id]: category,
+          [categoryId]: {...category, id: categoryId},
         },
       };
-    }),
+    });
+  },
 });

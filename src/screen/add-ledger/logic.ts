@@ -4,15 +4,15 @@ import {RootStackParamList} from '../../navigation';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {LedgerSelector, useRootStore} from '../../store';
 import {generateUUID} from '../../util';
-import {
-  CURRENCY,
-  IFullLedgerCategory,
-  ILedgerCategory,
-  ISubCategory,
-} from '../../constant';
+import {CURRENCY, IFullLedgerCategory} from '../../constant';
 import {useEffect, useRef} from 'react';
 import {Alert, TextInput} from 'react-native';
-import {omit, uniq} from 'ramda';
+import {
+  addCategoryList,
+  addLedger,
+  addSubCategoryList,
+  getApplicationData,
+} from '../../service/api';
 
 export const useLogic = () => {
   const navigation =
@@ -31,7 +31,7 @@ export const useLogic = () => {
 
   const inputRef = useRef<TextInput>(null);
 
-  const {addLedger, deleteLedger} = useRootStore();
+  const {deleteLedger} = useRootStore();
 
   useEffect(() => {
     if (!route.params?.color) {
@@ -98,52 +98,25 @@ export const useLogic = () => {
     ON_CHANGE_INPUT: (text: string) => {
       setState({name: text});
     },
-    ON_SUBMIT: () => {
-      const categoryIdList: number[] = [];
-
-      let categoryJson: {
-        [id: number]: ILedgerCategory;
-      } = {};
-
-      let subCategoryJson: {
-        [id: number]: ISubCategory;
-      } = {};
-
-      for (let i = 0; i < state.categoryList.length; i++) {
-        const category = state.categoryList[i];
-
-        categoryIdList.push(category.id);
-
-        const subCategoryIdList: number[] = [];
-
-        for (const subCategory of category?.subCategoryList) {
-          subCategoryIdList.push(subCategory?.id);
-
-          subCategoryJson = {
-            ...subCategoryJson,
-            [subCategory.id]: subCategory,
-          };
-        }
-
-        categoryJson = {
-          ...categoryJson,
-          [category.id]: {
-            ...omit(['subCategoryList'], category),
-            subCategoryIdList: uniq(subCategoryIdList),
-          },
-        };
-      }
-
-      addLedger({
-        categoryJson,
-        subCategoryJson,
-        categoryIdList: uniq(categoryIdList),
+    ON_SUBMIT: async () => {
+      const id = await addLedger({
         id: ledgerId || generateUUID(),
         name: state.name || 'Ledger',
         color: state.color,
         currency: CURRENCY[1],
         icon: state?.icon,
+        categoryIdList: [],
       });
+
+      const categories = await addCategoryList(state.categoryList, id!);
+
+      for (let i = 0; i < state.categoryList.length; i++) {
+        const category = state.categoryList[i];
+
+        await addSubCategoryList(category.subCategoryList, categories?.[i]?.id);
+      }
+
+      await getApplicationData();
       navigation.goBack();
     },
 

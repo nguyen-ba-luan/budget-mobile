@@ -1,8 +1,8 @@
 import {StateCreator} from 'zustand';
 import {ISubCategory} from '../constant';
 import {LedgerState} from './ledger.store';
-import {produce} from 'immer';
 import {CategoryState, StoreState} from '.';
+import {addSubCategory} from '../service/api';
 
 export interface SubCategoryState {
   subCategoryJson: {
@@ -26,11 +26,14 @@ export const createSubCategorySlice: StateCreator<
   SubCategoryState
 > = set => ({
   subCategoryJson: {},
-  addSubCategory: ({subCategory, categoryId}) =>
+  addSubCategory: async ({subCategory, categoryId}) => {
+    const id = await addSubCategory(subCategory, categoryId);
+    const subCategoryId = id || subCategory?.id;
     set(state => {
-      const subCategoryIdList = state.categoryJson[
-        categoryId
-      ]?.subCategoryIdList?.concat(subCategory?.id);
+      const subCategoryIdList =
+        state.categoryJson[categoryId]?.subCategoryIdList?.concat(
+          subCategoryId,
+        );
 
       return {
         categoryJson: {
@@ -42,8 +45,9 @@ export const createSubCategorySlice: StateCreator<
         },
         subCategoryJson: {
           ...state.subCategoryJson,
-          [subCategory.id]: subCategory,
+          [subCategoryId]: {...subCategory, id: subCategoryId},
         },
       };
-    }),
+    });
+  },
 });

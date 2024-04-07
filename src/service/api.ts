@@ -1,6 +1,7 @@
 import {Alert} from 'react-native';
 import {supabase} from '../../App';
 import {
+  IFullLedgerCategory,
   ILedger,
   ILedgerCategory,
   ISubCategory,
@@ -148,6 +149,179 @@ export const addTransaction = async (transaction: ITransaction) => {
         type: transaction?.type!,
         user_id: (await supabase?.auth.getUser()).data?.user?.id!,
         note: transaction?.note!,
+      })
+      .select();
+
+    if (error) {
+      return Alert.alert(error?.code || 'Error', error?.message);
+    }
+
+    return data?.[0]?.id;
+  } catch (error) {
+    Alert.alert('Error', JSON.stringify(error));
+  }
+};
+
+export const addCategory = async (
+  category: ILedgerCategory,
+  ledgerId: number,
+) => {
+  try {
+    let budgetId: number | null = null;
+
+    if (category?.budget.cost > 0) {
+      const {data} = await supabase
+        .from('budgets')
+        .insert({
+          cost: category?.budget?.cost,
+          period: category?.budget?.period,
+          start_date: category?.budget?.startDate,
+          budget_cycle: category?.budget?.budgetCycle,
+          user_id: (await supabase?.auth.getUser()).data?.user?.id!,
+        })
+        .select();
+
+      budgetId = data?.[0]?.id!;
+    }
+
+    const {error, data} = await supabase
+      .from('categories')
+      .insert({
+        name: category?.name,
+        icon: category?.icon,
+        color: category?.color,
+        type: category?.type,
+        ledger_id: ledgerId,
+        budget_id: budgetId,
+        user_id: (await supabase?.auth.getUser()).data?.user?.id!,
+      })
+      .select();
+
+    if (error) {
+      return Alert.alert(error?.code || 'Error', error?.message);
+    }
+
+    return data?.[0]?.id;
+  } catch (error) {
+    Alert.alert('Error', JSON.stringify(error));
+  }
+};
+
+export const addCategoryList = async (
+  categoryList: IFullLedgerCategory[],
+  ledgerId: number,
+) => {
+  try {
+    const categories = [];
+
+    for (const category of categoryList) {
+      let budgetId: number | null = null;
+
+      if (category?.budget.cost > 0) {
+        const {data} = await supabase
+          .from('budgets')
+          .insert({
+            cost: category?.budget?.cost,
+            period: category?.budget?.period,
+            start_date: category?.budget?.startDate,
+            budget_cycle: category?.budget?.budgetCycle,
+            user_id: (await supabase?.auth.getUser()).data?.user?.id!,
+          })
+          .select();
+
+        budgetId = data?.[0]?.id!;
+      }
+      categories.push({
+        name: category?.name,
+        icon: category?.icon,
+        color: category?.color,
+        type: category?.type,
+        ledger_id: ledgerId,
+        budget_id: budgetId,
+        user_id: (await supabase?.auth.getUser()).data?.user?.id!,
+      });
+    }
+
+    const {error, data} = await supabase
+      .from('categories')
+      .insert(categories)
+      .select();
+
+    if (error) {
+      Alert.alert(error?.code || 'Error', error?.message);
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    Alert.alert('Error', JSON.stringify(error));
+    return [];
+  }
+};
+
+export const addSubCategory = async (
+  subCategory: ISubCategory,
+  categoryId: number,
+) => {
+  try {
+    const {error, data} = await supabase
+      .from('sub_categories')
+      .insert({
+        name: subCategory?.name,
+        user_id: (await supabase?.auth.getUser()).data?.user?.id!,
+        category_id: categoryId,
+      })
+      .select();
+
+    if (error) {
+      return Alert.alert(error?.code || 'Error', error?.message);
+    }
+
+    return data?.[0]?.id;
+  } catch (error) {
+    Alert.alert('Error', JSON.stringify(error));
+  }
+};
+
+export const addSubCategoryList = async (
+  subCategoryList: ISubCategory[],
+  categoryId: number,
+) => {
+  try {
+    const subCategories = [];
+    for (const subCategory of subCategoryList) {
+      subCategories.push({
+        name: subCategory?.name,
+        user_id: (await supabase?.auth.getUser()).data?.user?.id!,
+        category_id: categoryId,
+      });
+    }
+
+    const {error, data} = await supabase
+      .from('sub_categories')
+      .insert(subCategories)
+      .select();
+
+    if (error) {
+      return Alert.alert(error?.code || 'Error', error?.message);
+    }
+
+    return data;
+  } catch (error) {
+    Alert.alert('Error', JSON.stringify(error));
+  }
+};
+
+export const addLedger = async (ledger: ILedger) => {
+  try {
+    const {error, data} = await supabase
+      .from('ledgers')
+      .insert({
+        name: ledger?.name,
+        color: ledger.color,
+        currency_id: ledger?.currency?.id,
+        icon: ledger?.icon,
+        user_id: (await supabase?.auth.getUser()).data?.user?.id!,
       })
       .select();
 
