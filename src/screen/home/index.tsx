@@ -1,8 +1,15 @@
 import {StyleSheet, View} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {CategoryList, Header} from './_components';
+import {useRootStore} from '../../store';
 
 const Home = () => {
+  const {fetchApplicationData} = useRootStore();
+
+  useEffect(() => {
+    fetchApplicationData();
+  }, [fetchApplicationData]);
+
   return (
     <View style={styles.container}>
       <Header />

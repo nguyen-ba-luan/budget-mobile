@@ -2,6 +2,7 @@ import {StateCreator} from 'zustand';
 import {ILedger, ILedgerCategory, ISubCategory} from '../constant';
 import {CategorySelector, StoreState} from '.';
 import {omit, uniq} from 'ramda';
+import {getApplicationData} from '../service/api';
 
 interface AddLedgerPayload extends ILedger {
   categoryJson: {
@@ -21,6 +22,7 @@ export interface LedgerState {
   addLedger: (ledger: AddLedgerPayload) => void;
   deleteLedger: (ledgerId: number) => void;
   selectLedger: (id: number) => void;
+  fetchApplicationData: () => void;
 }
 
 export const LedgerSelector = {
@@ -54,6 +56,24 @@ export const createLedgerSlice: StateCreator<
   selectedLedgerId: 0,
   ledgerIdList: [],
   ledgerJson: {},
+  fetchApplicationData: async () => {
+    const {
+      categoryJson,
+      ledgerIdList,
+      ledgerJson,
+      subCategoryJson,
+      transactionIdList,
+      transactionJson,
+    } = await getApplicationData();
+    set({
+      categoryJson,
+      ledgerIdList,
+      ledgerJson,
+      subCategoryJson,
+      transactionIdList,
+      transactionJson,
+    });
+  },
   selectLedger: (id: number) =>
     set(() => ({
       selectedLedgerId: id,

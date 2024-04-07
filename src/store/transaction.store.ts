@@ -3,6 +3,7 @@ import {ITransaction} from '../constant';
 import {LedgerState} from './ledger.store';
 import {StoreState} from '.';
 import {getRangeFilter, outOfRange} from '../util';
+import {addTransaction} from '../service/api';
 
 export interface TransactionState {
   transactionIdList: {
@@ -29,7 +30,7 @@ export const TransactionSelector = {
 
     for (const transactionId of transactionIdList) {
       const transaction = state.transactionJson[transactionId];
-      if (outOfRange(from, to, transaction.time)) {
+      if (outOfRange(from, to, transaction?.time)) {
         continue;
       }
 
@@ -50,18 +51,24 @@ export const createTransactionSlice: StateCreator<
 > = set => ({
   transactionIdList: {},
   transactionJson: {},
-  addTransaction: transaction =>
+  addTransaction: async transaction => {
+    const id = await addTransaction(transaction);
+    const transactionId = id || transaction?.id;
     set(state => ({
       transactionIdList: {
         ...state.transactionIdList,
         [state.selectedLedgerId]: [
           ...(state.transactionIdList[state.selectedLedgerId] || []),
-          transaction?.id,
+          transactionId,
         ],
       },
       transactionJson: {
         ...state.transactionJson,
-        [transaction?.id]: transaction,
+        [transactionId]: {
+          ...transaction,
+          id: transactionId,
+        },
       },
-    })),
+    }));
+  },
 });
