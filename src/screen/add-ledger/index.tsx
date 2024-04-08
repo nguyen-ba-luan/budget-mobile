@@ -59,7 +59,7 @@ const AddLedger = () => {
 
         {state.categoryList.map(category => (
           <TouchableOpacity
-            key={category.id}
+            key={category?.id || '' + category?.temporaryId || ''}
             style={styles.rowItem}
             activeOpacity={0.8}
             onPress={handlers.ON_EDIT_CATEGORY(category)}>

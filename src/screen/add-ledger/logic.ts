@@ -55,17 +55,26 @@ export const useLogic = () => {
     if (!route.params?.category) {
       return;
     }
-    const categoryId = route.params?.categoryId;
 
-    setState(prevState => ({
-      categoryList: categoryId
-        ? prevState.categoryList?.map(category =>
-            category?.id === categoryId
-              ? {...category, ...route.params?.category}
-              : category,
-          )
-        : [...prevState.categoryList, route.params?.category!],
-    }));
+    setState(prevState => {
+      const isEditing =
+        prevState.categoryList?.findIndex(
+          item =>
+            item?.id === route.params?.category?.id &&
+            item?.temporaryId === route.params?.category?.temporaryId,
+        ) > -1;
+
+      return {
+        categoryList: isEditing
+          ? prevState.categoryList?.map(category =>
+              category?.id === route.params?.category?.id &&
+              category?.temporaryId === route.params?.category?.temporaryId
+                ? {...category, ...route.params?.category}
+                : category,
+            )
+          : [...prevState.categoryList, route.params?.category!],
+      };
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route.params?.category]);
 

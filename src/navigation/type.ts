@@ -8,7 +8,6 @@ export type RootStackParamList = {
     color?: string;
     icon?: string;
     category?: IFullLedgerCategory;
-    categoryId?: number;
     /** PARAMS FOR SET PARAMS FROM OTHER SCREEN */
   };
   AddTransaction: {

@@ -39,7 +39,7 @@ const SubCategory = (props: IProps) => {
     <View style={styles.container}>
       {subCategoryList?.map(item => {
         return (
-          <View key={item?.id}>
+          <View key={item?.id || '' + item?.temporaryId || ''}>
             <Tooltip
               contentStyle={{width: 110}}
               isVisible={toolTipVisible}

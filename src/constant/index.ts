@@ -38,12 +38,14 @@ export interface IBudget {
 }
 
 export interface ISubCategory {
-  id: number;
+  id?: number;
+  temporaryId?: number;
   name: string;
 }
 
 export interface ILedgerCategory {
-  id: number;
+  id?: number;
+  temporaryId?: number;
   name: string;
   icon: string;
   color: string;

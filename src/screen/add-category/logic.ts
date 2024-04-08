@@ -11,7 +11,8 @@ import {
   LedgerCategoryType,
   PeriodType,
 } from '../../constant';
-import {generateUUID} from '../../util';
+import {generateUUID, insertObjectIfElse} from '../../util';
+import {isNotNilOrEmpty} from 'ramda-adjunct';
 
 export enum InputType {
   SUB_CATEGORY = 'SUB_CATEGORY',
@@ -143,7 +144,7 @@ export const useLogic = () => {
       }
 
       const newSubCategory: ISubCategory = {
-        id: generateUUID(),
+        temporaryId: generateUUID(),
         name: state.inputValue,
       };
 
@@ -153,7 +154,15 @@ export const useLogic = () => {
     },
     ON_SUBMIT: () => {
       const newCategory: IFullLedgerCategory = {
-        id: category?.id ?? generateUUID(),
+        ...insertObjectIfElse(
+          isNotNilOrEmpty(category?.id),
+          {
+            id: category?.id,
+          },
+          {
+            temporaryId: category?.temporaryId ?? generateUUID(),
+          },
+        ),
         name: state.name || 'Category',
         type: state.type,
         color: state.color,
@@ -165,7 +174,6 @@ export const useLogic = () => {
       navigation.navigate({
         name: route?.params?.previousScreen,
         params: {
-          categoryId: category?.id,
           category: newCategory,
         },
         merge: true,
