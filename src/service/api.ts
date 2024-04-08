@@ -9,6 +9,7 @@ import {
   LedgerCategoryType,
   PeriodType,
 } from '../constant';
+import {isNilOrEmpty} from 'ramda-adjunct';
 
 export const getApplicationData = async () => {
   const ledgerIdList: number[] = [];
@@ -73,6 +74,7 @@ export const getApplicationData = async () => {
             color: category?.color,
             type: category?.type as LedgerCategoryType,
             budget: {
+              id: category?.budgets?.id,
               cost: category?.budgets?.cost!,
               period: category?.budgets?.period! as PeriodType,
               startDate: category?.budgets?.start_date!,
@@ -163,13 +165,13 @@ export const addTransaction = async (transaction: ITransaction) => {
 };
 
 export const addCategory = async (
-  category: ILedgerCategory,
+  category: Omit<ILedgerCategory, 'subCategoryIdList'>,
   ledgerId: number,
 ) => {
   try {
     let budgetId: number | null = null;
 
-    if (category?.budget.cost > 0) {
+    if (category?.budget.cost >= 0) {
       const {data} = await supabase
         .from('budgets')
         .insert({
@@ -198,12 +200,68 @@ export const addCategory = async (
       .select();
 
     if (error) {
-      return Alert.alert(error?.code || 'Error', error?.message);
+      Alert.alert(error?.code || 'Error', error?.message);
+      return 0;
     }
 
     return data?.[0]?.id;
   } catch (error) {
     Alert.alert('Error', JSON.stringify(error));
+    return 0;
+  }
+};
+
+export const updateCategory = async (
+  category: Omit<ILedgerCategory, 'subCategoryIdList'>,
+) => {
+  try {
+    let budgetId = category?.budget?.id;
+    if (isNilOrEmpty(category?.budget?.id)) {
+      const {data} = await supabase
+        .from('budgets')
+        .insert({
+          cost: category?.budget?.cost || 0,
+          period: category?.budget?.period,
+          start_date: category?.budget?.startDate,
+          budget_cycle: category?.budget?.budgetCycle,
+          user_id: (await supabase?.auth.getUser()).data?.user?.id!,
+        })
+        .select();
+      budgetId = data?.[0]?.id!;
+    } else {
+      await supabase
+        .from('budgets')
+        .update({
+          cost: category?.budget?.cost || 0,
+          period: category?.budget?.period,
+          start_date: category?.budget?.startDate,
+          budget_cycle: category?.budget?.budgetCycle,
+        })
+        .eq('id', category?.budget?.id!)
+        .select();
+    }
+
+    const {error, data} = await supabase
+      .from('categories')
+      .update({
+        name: category?.name,
+        icon: category?.icon,
+        color: category?.color,
+        type: category?.type,
+        budget_id: budgetId,
+      })
+      .eq('id', category?.id!)
+      .select();
+
+    if (error) {
+      Alert.alert(error?.code || 'Error', error?.message);
+      return 0;
+    }
+
+    return data?.[0]?.id;
+  } catch (error) {
+    Alert.alert('Error', JSON.stringify(error));
+    return 0;
   }
 };
 
@@ -283,6 +341,26 @@ export const addSubCategory = async (
   }
 };
 
+export const updateSubCategory = async (subCategory: ISubCategory) => {
+  try {
+    const {error, data} = await supabase
+      .from('sub_categories')
+      .update({
+        name: subCategory?.name,
+      })
+      .eq('id', subCategory?.id!)
+      .select();
+
+    if (error) {
+      return Alert.alert(error?.code || 'Error', error?.message);
+    }
+
+    return data?.[0]?.id;
+  } catch (error) {
+    Alert.alert('Error', JSON.stringify(error));
+  }
+};
+
 export const addSubCategoryList = async (
   subCategoryList: ISubCategory[],
   categoryId: number,
@@ -312,7 +390,9 @@ export const addSubCategoryList = async (
   }
 };
 
-export const addLedger = async (ledger: ILedger) => {
+export const addLedger = async (
+  ledger: Omit<ILedger, 'id' | 'categoryIdList'>,
+) => {
   try {
     const {error, data} = await supabase
       .from('ledgers')
@@ -330,6 +410,52 @@ export const addLedger = async (ledger: ILedger) => {
     }
 
     return data?.[0]?.id;
+  } catch (error) {
+    Alert.alert('Error', JSON.stringify(error));
+  }
+};
+
+export const updateLedger = async (ledger: Omit<ILedger, 'categoryIdList'>) => {
+  try {
+    const {error, data} = await supabase
+      .from('ledgers')
+      .update({
+        name: ledger?.name,
+        color: ledger.color,
+        currency_id: ledger?.currency?.id,
+        icon: ledger?.icon,
+      })
+      .eq('id', ledger?.id)
+      .select();
+
+    if (error) {
+      return Alert.alert(error?.code || 'Error', error?.message);
+    }
+
+    return data?.[0]?.id;
+  } catch (error) {
+    Alert.alert('Error', JSON.stringify(error));
+  }
+};
+
+export const deleteLedger = async (input: {
+  ledgerId: number;
+  categoryIdList: number[];
+  subCategoryIdList: number[];
+  budgetIdList: number[];
+}) => {
+  const {ledgerId, categoryIdList, subCategoryIdList, budgetIdList} = input;
+  try {
+    await supabase.from('transactions').delete().eq('ledger_id', ledgerId);
+    await supabase.from('budgets').delete().in('id', budgetIdList);
+    await supabase.from('sub_categories').delete().in('id', subCategoryIdList);
+    await supabase.from('categories').delete().in('id', categoryIdList);
+    await supabase.from('budgets').delete().in('id', budgetIdList);
+    const {error} = await supabase.from('ledgers').delete().eq('id', ledgerId);
+
+    if (error) {
+      return Alert.alert(error?.code || 'Error', error?.message);
+    }
   } catch (error) {
     Alert.alert('Error', JSON.stringify(error));
   }

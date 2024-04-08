@@ -28,6 +28,8 @@ export interface ICurrency {
 }
 
 export interface IBudget {
+  id?: number;
+  temporaryId?: number;
   cost: number;
   period: PeriodType;
   /**

@@ -33,7 +33,7 @@ export const createCategorySlice: StateCreator<
   categoryJson: {},
   addCategory: async ({category, ledgerId}) => {
     const id = await addCategory(category, ledgerId);
-    const categoryId = id || category?.id;
+    const categoryId = id || category?.id!;
 
     set(state => {
       const categoryIdList =

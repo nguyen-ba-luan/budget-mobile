@@ -3,16 +3,20 @@ import useMergingState from '../../hook/useMergingState';
 import {RootStackParamList} from '../../navigation';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {LedgerSelector, useRootStore} from '../../store';
-import {generateUUID} from '../../util';
 import {CURRENCY, IFullLedgerCategory} from '../../constant';
 import {useEffect, useRef} from 'react';
 import {Alert, TextInput} from 'react-native';
 import {
-  addCategoryList,
+  addCategory,
   addLedger,
-  addSubCategoryList,
-  getApplicationData,
+  addSubCategory,
+  deleteLedger,
+  updateCategory,
+  updateLedger,
+  updateSubCategory,
 } from '../../service/api';
+import {isNotNilOrEmpty} from 'ramda-adjunct';
+import {map} from '../../util';
 
 export const useLogic = () => {
   const navigation =
@@ -31,7 +35,7 @@ export const useLogic = () => {
 
   const inputRef = useRef<TextInput>(null);
 
-  const {deleteLedger} = useRootStore();
+  const {fetchApplicationData} = useRootStore();
 
   useEffect(() => {
     if (!route.params?.color) {
@@ -108,30 +112,60 @@ export const useLogic = () => {
       setState({name: text});
     },
     ON_SUBMIT: async () => {
-      const id = await addLedger({
-        id: ledgerId || generateUUID(),
-        name: state.name || 'Ledger',
-        color: state.color,
-        currency: CURRENCY[1],
-        icon: state?.icon,
-        categoryIdList: [],
-      });
-
-      const categories = await addCategoryList(state.categoryList, id!);
-
+      const id = ledgerId
+        ? await updateLedger({
+            id: ledgerId,
+            name: state.name || 'Ledger',
+            color: state.color,
+            currency: CURRENCY[1],
+            icon: state?.icon,
+          })
+        : await addLedger({
+            name: state.name || 'Ledger',
+            color: state.color,
+            currency: CURRENCY[1],
+            icon: state?.icon,
+          });
       for (let i = 0; i < state.categoryList.length; i++) {
         const category = state.categoryList[i];
 
-        await addSubCategoryList(category.subCategoryList, categories?.[i]?.id);
+        const isEditingCategory = isNotNilOrEmpty(category.id);
+
+        let categoryId = category?.id;
+
+        if (isEditingCategory) {
+          await updateCategory(category);
+        } else {
+          categoryId = await addCategory(category, id!);
+        }
+
+        for (const subCategory of category.subCategoryList) {
+          const isEditingSubCategory = isNotNilOrEmpty(subCategory.id);
+
+          if (isEditingSubCategory) {
+            await updateSubCategory(subCategory);
+          } else {
+            await addSubCategory(subCategory, categoryId!);
+          }
+        }
       }
 
-      await getApplicationData();
+      fetchApplicationData();
       navigation.goBack();
     },
 
     ON_DELETE_LEDGER: () => {
       if (!ledgerId) {
         return;
+      }
+      const subCategoryIdList: number[] = [];
+      const budgetIdList: number[] = [];
+
+      for (const category of ledgerDetail?.categoryList || []) {
+        subCategoryIdList.push(...map(category.subCategoryList, it => it?.id!));
+        if (category?.budget?.id) {
+          budgetIdList.push(category?.budget?.id);
+        }
       }
 
       Alert.alert('Confirm', 'Are you sure?', [
@@ -141,8 +175,14 @@ export const useLogic = () => {
         },
         {
           text: 'OK',
-          onPress: () => {
-            deleteLedger(ledgerId);
+          onPress: async () => {
+            await deleteLedger({
+              ledgerId,
+              categoryIdList: ledgerDetail?.categoryIdList || [],
+              subCategoryIdList,
+              budgetIdList,
+            });
+            fetchApplicationData();
             navigation.goBack();
           },
         },
