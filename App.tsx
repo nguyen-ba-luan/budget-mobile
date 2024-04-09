@@ -1,10 +1,20 @@
 import React from 'react';
-import {SafeAreaView, StatusBar, StyleProp, ViewStyle} from 'react-native';
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  StatusBar,
+  StyleProp,
+  StyleSheet,
+  ViewStyle,
+} from 'react-native';
 import AppNavigation from './src/navigation';
 import {createClient} from '@supabase/supabase-js';
 import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Database} from './src/supabase';
+import {View} from 'react-native';
+import {useRootStore} from './src/store';
+import {CommonSelector} from './src/store/common.store';
 
 const supabaseUrl = 'https://teplpgfdefrpawmktqxa.supabase.co';
 const supabaseAnonKey =
@@ -21,6 +31,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 });
 
 function App(): React.JSX.Element {
+  const loading = useRootStore(CommonSelector.selectGlobalLoading);
   const backgroundStyle: StyleProp<ViewStyle> = {
     backgroundColor: '#ffffff',
     flex: 1,
@@ -33,8 +44,22 @@ function App(): React.JSX.Element {
         backgroundColor={backgroundStyle.backgroundColor}
       />
       <AppNavigation />
+      {loading && (
+        <View style={styles.loading}>
+          <ActivityIndicator animating={true} color={'white'} />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  loading: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#0003',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 
 export default App;

@@ -29,9 +29,9 @@ function HomeStack() {
         component={AddTransaction}
       />
       <Stack.Screen
-        options={{
-          presentation: 'formSheet',
-        }}
+        // options={{
+        //   presentation: 'formSheet',
+        // }}
         name="AddLedger"
         component={AddLedger}
       />

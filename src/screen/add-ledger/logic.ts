@@ -35,7 +35,7 @@ export const useLogic = () => {
 
   const inputRef = useRef<TextInput>(null);
 
-  const {fetchApplicationData} = useRootStore();
+  const {fetchApplicationData, setGlobalLoading} = useRootStore();
 
   useEffect(() => {
     if (!route.params?.color) {
@@ -112,46 +112,53 @@ export const useLogic = () => {
       setState({name: text});
     },
     ON_SUBMIT: async () => {
-      const id = ledgerId
-        ? await updateLedger({
-            id: ledgerId,
-            name: state.name || 'Ledger',
-            color: state.color,
-            currency: CURRENCY[1],
-            icon: state?.icon,
-          })
-        : await addLedger({
-            name: state.name || 'Ledger',
-            color: state.color,
-            currency: CURRENCY[1],
-            icon: state?.icon,
-          });
-      for (let i = 0; i < state.categoryList.length; i++) {
-        const category = state.categoryList[i];
+      try {
+        setGlobalLoading(true);
+        const id = ledgerId
+          ? await updateLedger({
+              id: ledgerId,
+              name: state.name || 'Ledger',
+              color: state.color,
+              currency: CURRENCY[1],
+              icon: state?.icon,
+            })
+          : await addLedger({
+              name: state.name || 'Ledger',
+              color: state.color,
+              currency: CURRENCY[1],
+              icon: state?.icon,
+            });
+        for (let i = 0; i < state.categoryList.length; i++) {
+          const category = state.categoryList[i];
 
-        const isEditingCategory = isNotNilOrEmpty(category.id);
+          const isEditingCategory = isNotNilOrEmpty(category.id);
 
-        let categoryId = category?.id;
+          let categoryId = category?.id;
 
-        if (isEditingCategory) {
-          await updateCategory(category);
-        } else {
-          categoryId = await addCategory(category, id!);
-        }
-
-        for (const subCategory of category.subCategoryList) {
-          const isEditingSubCategory = isNotNilOrEmpty(subCategory.id);
-
-          if (isEditingSubCategory) {
-            await updateSubCategory(subCategory);
+          if (isEditingCategory) {
+            await updateCategory(category);
           } else {
-            await addSubCategory(subCategory, categoryId!);
+            categoryId = await addCategory(category, id!);
+          }
+
+          for (const subCategory of category.subCategoryList) {
+            const isEditingSubCategory = isNotNilOrEmpty(subCategory.id);
+
+            if (isEditingSubCategory) {
+              await updateSubCategory(subCategory);
+            } else {
+              await addSubCategory(subCategory, categoryId!);
+            }
           }
         }
-      }
 
-      fetchApplicationData();
-      navigation.goBack();
+        fetchApplicationData();
+        navigation.goBack();
+      } catch (error) {
+        setGlobalLoading(false);
+      } finally {
+        setGlobalLoading(false);
+      }
     },
 
     ON_DELETE_LEDGER: () => {
@@ -176,14 +183,21 @@ export const useLogic = () => {
         {
           text: 'OK',
           onPress: async () => {
-            await deleteLedger({
-              ledgerId,
-              categoryIdList: ledgerDetail?.categoryIdList || [],
-              subCategoryIdList,
-              budgetIdList,
-            });
-            fetchApplicationData();
-            navigation.goBack();
+            try {
+              setGlobalLoading(true);
+              await deleteLedger({
+                ledgerId,
+                categoryIdList: ledgerDetail?.categoryIdList || [],
+                subCategoryIdList,
+                budgetIdList,
+              });
+              fetchApplicationData();
+              navigation.goBack();
+            } catch (error) {
+              setGlobalLoading(false);
+            } finally {
+              setGlobalLoading(false);
+            }
           },
         },
       ]);
