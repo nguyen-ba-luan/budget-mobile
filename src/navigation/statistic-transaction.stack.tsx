@@ -19,14 +19,7 @@ const StatisticTransactionStack = () => {
         name="StatisticTransaction"
         component={StatisticTransaction}
       />
-      <Stack.Screen
-        options={{
-          presentation: 'formSheet',
-          gestureEnabled: false,
-        }}
-        name="TransactionDetail"
-        component={TransactionDetail}
-      />
+      <Stack.Screen name="TransactionDetail" component={TransactionDetail} />
       <Stack.Screen
         options={{
           presentation: 'transparentModal',

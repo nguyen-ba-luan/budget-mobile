@@ -164,6 +164,21 @@ export const addTransaction = async (transaction: ITransaction) => {
   }
 };
 
+export const deleteTransaction = async (transactionId: number) => {
+  try {
+    const {error} = await supabase
+      .from('transactions')
+      .delete()
+      .eq('id', transactionId);
+
+    if (error) {
+      return Alert.alert(error?.code || 'Error', error?.message);
+    }
+  } catch (error) {
+    Alert.alert('Error', JSON.stringify(error));
+  }
+};
+
 export const addCategory = async (
   category: Omit<ILedgerCategory, 'subCategoryIdList'>,
   ledgerId: number,

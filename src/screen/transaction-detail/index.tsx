@@ -1,5 +1,12 @@
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React, {useCallback} from 'react';
 import {Header} from './_components';
 import {StatisticTransactionParamList} from '../../navigation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -8,8 +15,10 @@ import {formatDate, formatNumber} from '../../util';
 import {LedgerCategoryType} from '../../constant';
 import {SubCategorySelector} from '../../store/sub-category.store';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {deleteTransaction} from '../../service/api';
 
 const TransactionDetail = ({
+  navigation,
   route,
 }: NativeStackScreenProps<
   StatisticTransactionParamList,
@@ -26,8 +35,33 @@ const TransactionDetail = ({
   const subCategory = useRootStore(
     SubCategorySelector.selectSubCategoryById(transaction.subCategoryId),
   );
+  const {setGlobalLoading, fetchApplicationData} = useRootStore();
 
   const isExpenses = transaction.type === LedgerCategoryType.EXPENSES;
+
+  const onDelete = useCallback(() => {
+    Alert.alert('Confirm', 'Are you sure?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'OK',
+        onPress: async () => {
+          try {
+            setGlobalLoading(true);
+            await deleteTransaction(transactionId);
+            fetchApplicationData();
+            navigation.goBack();
+          } catch (error) {
+            setGlobalLoading(false);
+          } finally {
+            setGlobalLoading(false);
+          }
+        },
+      },
+    ]);
+  }, [transactionId]);
 
   return (
     <View style={styles.container}>
@@ -70,9 +104,12 @@ const TransactionDetail = ({
           <Text style={styles.label}>Note</Text>
           <Text>{transaction.note || 'None'}</Text>
         </View>
-        <View>
-          <FontAwesome name={'trash'} />
-        </View>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={styles.wrapperDeleteIcon}
+          onPress={onDelete}>
+          <FontAwesome name={'trash'} color={'salmon'} size={30} />
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -110,5 +147,15 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     color: 'gray',
+  },
+  wrapperDeleteIcon: {
+    backgroundColor: 'whitesmoke',
+    width: 50,
+    aspectRatio: 1,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 20,
   },
 });
