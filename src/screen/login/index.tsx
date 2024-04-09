@@ -3,15 +3,20 @@ import React, {useCallback, useState} from 'react';
 import {supabase} from '../../../App';
 import {useRootStore} from '../../store';
 import {Alert} from 'react-native';
+import {AuthParamList} from '../../navigation';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-const Login = () => {
-  const [email, setEmail] = useState('rotationba@gmail.com');
-  const [password, setPassword] = useState('abcd1234');
+const Login = ({
+  navigation,
+}: NativeStackScreenProps<AuthParamList, 'Login'>) => {
+  const [email, setEmail] = useState(__DEV__ ? 'rotationba@gmail.com' : '');
+  const [password, setPassword] = useState(__DEV__ ? 'abcd1234' : '');
 
-  const {setToken} = useRootStore();
+  const {setToken, setGlobalLoading} = useRootStore();
 
   const onLogin = useCallback(async () => {
     try {
+      setGlobalLoading(true);
       const res = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -25,8 +30,14 @@ const Login = () => {
       Alert.alert(res.error?.name || 'Error', res.error?.message);
     } catch (error) {
       Alert.alert('Error', JSON.stringify(error));
+    } finally {
+      setGlobalLoading(false);
     }
   }, [setToken, email, password]);
+
+  const onSignUp = useCallback(() => {
+    navigation.navigate('SignUp');
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -36,6 +47,7 @@ const Login = () => {
         placeholder="Enter email"
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
@@ -45,6 +57,7 @@ const Login = () => {
         onChangeText={setPassword}
       />
       <Button title="Login" onPress={onLogin} />
+      <Button title="SignUp" onPress={onSignUp} />
     </View>
   );
 };

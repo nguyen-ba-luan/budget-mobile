@@ -1,6 +1,6 @@
 import {StateCreator} from 'zustand';
 import {ILedger, ILedgerCategory, ISubCategory} from '../constant';
-import {CategorySelector, StoreState} from '.';
+import {CategorySelector, StoreState, sliceResetFns} from '.';
 import {omit, uniq} from 'ramda';
 import {getApplicationData} from '../service/api';
 
@@ -46,67 +46,74 @@ export const LedgerSelector = {
         }
       : undefined,
 };
+const initialLedgerState = {
+  selectedLedgerId: 0,
+  ledgerIdList: [],
+  ledgerJson: {},
+};
 
 export const createLedgerSlice: StateCreator<
   StoreState,
   [],
   [],
   LedgerState
-> = set => ({
-  selectedLedgerId: 0,
-  ledgerIdList: [],
-  ledgerJson: {},
-  fetchApplicationData: async () => {
-    const {
-      categoryJson,
-      ledgerIdList,
-      ledgerJson,
-      subCategoryJson,
-      transactionIdList,
-      transactionJson,
-    } = await getApplicationData();
-    set({
-      categoryJson,
-      ledgerIdList,
-      ledgerJson,
-      subCategoryJson,
-      transactionIdList,
-      transactionJson,
-    });
-  },
-  selectLedger: (id: number) =>
-    set(() => ({
-      selectedLedgerId: id,
-    })),
-  addLedger: (payload: AddLedgerPayload) =>
-    set((state: StoreState) => ({
-      selectedLedgerId: payload?.id,
-      ledgerIdList: uniq([...state.ledgerIdList, payload.id]),
-      ledgerJson: {
-        ...state.ledgerJson,
-        [payload?.id]: omit(['categoryJson', 'subCategoryJson'], payload),
-      },
-      categoryJson: {
-        ...state.categoryJson,
-        ...payload?.categoryJson,
-      },
-      subCategoryJson: {
-        ...state.subCategoryJson,
-        ...payload?.subCategoryJson,
-      },
-    })),
-  deleteLedger: (ledgerId: number) =>
-    set((state: StoreState) => {
-      const newLedgerIdList = state.ledgerIdList?.filter(
-        item => item !== ledgerId,
-      );
-      return {
-        selectedLedgerId:
-          state?.selectedLedgerId === ledgerId
-            ? newLedgerIdList[0]
-            : state?.selectedLedgerId,
-        ledgerIdList: newLedgerIdList,
-        ledgerJson: omit([ledgerId], state.ledgerJson),
-      };
-    }),
-});
+> = set => {
+  sliceResetFns.add(() => set(initialLedgerState));
+
+  return {
+    ...initialLedgerState,
+    fetchApplicationData: async () => {
+      const {
+        categoryJson,
+        ledgerIdList,
+        ledgerJson,
+        subCategoryJson,
+        transactionIdList,
+        transactionJson,
+      } = await getApplicationData();
+      set({
+        categoryJson,
+        ledgerIdList,
+        ledgerJson,
+        subCategoryJson,
+        transactionIdList,
+        transactionJson,
+      });
+    },
+    selectLedger: (id: number) =>
+      set(() => ({
+        selectedLedgerId: id,
+      })),
+    addLedger: (payload: AddLedgerPayload) =>
+      set((state: StoreState) => ({
+        selectedLedgerId: payload?.id,
+        ledgerIdList: uniq([...state.ledgerIdList, payload.id]),
+        ledgerJson: {
+          ...state.ledgerJson,
+          [payload?.id]: omit(['categoryJson', 'subCategoryJson'], payload),
+        },
+        categoryJson: {
+          ...state.categoryJson,
+          ...payload?.categoryJson,
+        },
+        subCategoryJson: {
+          ...state.subCategoryJson,
+          ...payload?.subCategoryJson,
+        },
+      })),
+    deleteLedger: (ledgerId: number) =>
+      set((state: StoreState) => {
+        const newLedgerIdList = state.ledgerIdList?.filter(
+          item => item !== ledgerId,
+        );
+        return {
+          selectedLedgerId:
+            state?.selectedLedgerId === ledgerId
+              ? newLedgerIdList[0]
+              : state?.selectedLedgerId,
+          ledgerIdList: newLedgerIdList,
+          ledgerJson: omit([ledgerId], state.ledgerJson),
+        };
+      }),
+  };
+};
