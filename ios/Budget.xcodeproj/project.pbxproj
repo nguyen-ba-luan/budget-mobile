@@ -554,7 +554,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7G3XXR5TZA;
+				DEVELOPMENT_TEAM = 384DXMTVRL;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = budget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Budget;
@@ -587,7 +587,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7G3XXR5TZA;
+				DEVELOPMENT_TEAM = 384DXMTVRL;
 				INFOPLIST_FILE = budget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Budget;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
