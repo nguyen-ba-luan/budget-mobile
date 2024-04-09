@@ -12,7 +12,6 @@ export interface TransactionState {
   transactionJson: {
     [id: number]: ITransaction;
   };
-  addTransaction: (transaction: ITransaction) => void;
 }
 
 export const TransactionSelector = {
@@ -51,24 +50,4 @@ export const createTransactionSlice: StateCreator<
 > = set => ({
   transactionIdList: {},
   transactionJson: {},
-  addTransaction: async transaction => {
-    const id = await addTransaction(transaction);
-    const transactionId = id || transaction?.id;
-    set(state => ({
-      transactionIdList: {
-        ...state.transactionIdList,
-        [state.selectedLedgerId]: [
-          ...(state.transactionIdList[state.selectedLedgerId] || []),
-          transactionId,
-        ],
-      },
-      transactionJson: {
-        ...state.transactionJson,
-        [transactionId]: {
-          ...transaction,
-          id: transactionId,
-        },
-      },
-    }));
-  },
 });

@@ -58,7 +58,7 @@ const CategoryList = () => {
         ?.filter(item => item?.type === LedgerCategoryType.EXPENSES)
         ?.map(item => ({
           ...item,
-          costTotal: totalExpensesByCategory[item?.id] || 0,
+          costTotal: totalExpensesByCategory[item?.id!] || 0,
         })),
       total: totalExpenses,
     },
@@ -68,7 +68,7 @@ const CategoryList = () => {
         ?.filter(item => item?.type === LedgerCategoryType.INCOME)
         ?.map(item => ({
           ...item,
-          costTotal: totalIncomeByCategory[item?.id] || 0,
+          costTotal: totalIncomeByCategory[item?.id!] || 0,
         })),
       total: totalIncome,
     },
@@ -105,7 +105,10 @@ const CategoryList = () => {
                   <TouchableOpacity
                     key={category.id}
                     activeOpacity={0.8}
-                    onPress={onAddTransaction(category.id, category?.costTotal)}
+                    onPress={onAddTransaction(
+                      category.id!,
+                      category?.costTotal,
+                    )}
                     style={[
                       styles.itemContainer,
                       {backgroundColor: category?.color},

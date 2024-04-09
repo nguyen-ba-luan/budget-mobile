@@ -138,7 +138,7 @@ export const getApplicationData = async () => {
   }
 };
 
-export const addTransaction = async (transaction: ITransaction) => {
+export const addTransaction = async (transaction: Omit<ITransaction, 'id'>) => {
   try {
     const {error, data} = await supabase
       .from('transactions')

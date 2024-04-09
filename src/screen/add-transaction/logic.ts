@@ -8,6 +8,7 @@ import {generateUUID} from '../../util';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {RootStackParamList} from '../../navigation';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {addTransaction} from '../../service/api';
 
 export enum InputType {
   SUB_CATEGORY = 'SUB_CATEGORY',
@@ -29,7 +30,7 @@ export const useAddTransactionLogic = () => {
     inputType: '' as InputType,
   });
 
-  const {addSubCategory, addTransaction} = useRootStore();
+  const {addSubCategory, fetchApplicationData} = useRootStore();
   const category = useRootStore(
     CategorySelector.selectLedgerCategory(categoryId),
   );
@@ -94,23 +95,22 @@ export const useAddTransactionLogic = () => {
         });
       }
     },
-    ON_SUBMIT: () => {
-      navigation.goBack();
-
+    ON_SUBMIT: async () => {
       if (state.cost === 0) {
         return;
       }
 
-      addTransaction({
-        id: generateUUID(),
+      await addTransaction({
         categoryId,
         ledgerId,
         cost: state.cost,
         note: state.note,
-        subCategoryId: state.selectedSubCategoryId,
+        subCategoryId: state.selectedSubCategoryId!,
         time: state.time,
         type: category?.type,
       });
+      fetchApplicationData();
+      navigation.goBack();
     },
   };
 
