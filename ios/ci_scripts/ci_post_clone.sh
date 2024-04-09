@@ -7,4 +7,4 @@ brew install yarn
 
 # Install dependencies
 yarn
-pod install
+pod install --repo-update
