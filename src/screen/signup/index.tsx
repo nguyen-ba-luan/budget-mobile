@@ -1,68 +1,88 @@
-import {
-  Alert,
-  Button,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useCallback, useState} from 'react';
 import {supabase} from '../../../App';
 import {AuthParamList} from '../../navigation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useRootStore} from '../../store';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import {yupResolver} from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import {FormProvider, useForm} from 'react-hook-form';
+import {TextInput} from '../../component';
+
+const schema = yup
+  .object({
+    email: yup.string().required().email(),
+    password: yup.string().required().min(6),
+  })
+  .required();
+
+type FormValues = {
+  email: string;
+  password: string;
+};
 
 const SignUp = ({
   navigation,
 }: NativeStackScreenProps<AuthParamList, 'SignUp'>) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
+  const {...methods} = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    shouldFocusError: true,
+  });
   const {setToken, setGlobalLoading} = useRootStore();
 
-  const onSignUp = useCallback(async () => {
-    try {
-      setGlobalLoading(true);
-      const res = await supabase.auth.signUp({
-        email,
-        password,
-      });
+  const onSubmit = useCallback(
+    async ({email, password}: FormValues) => {
+      try {
+        setGlobalLoading(true);
+        const res = await supabase.auth.signUp({
+          email,
+          password,
+        });
 
-      if (res.error) {
-        return Alert.alert(res.error?.name || 'Error', res.error?.message);
+        if (res.error) {
+          return Alert.alert(res.error?.name || 'Error', res.error?.message);
+        }
+
+        navigation.goBack();
+      } catch (error) {
+        Alert.alert('Error', JSON.stringify(error));
+      } finally {
+        setGlobalLoading(false);
       }
-
-      navigation.goBack();
-    } catch (error) {
-      Alert.alert('Error', JSON.stringify(error));
-    } finally {
-      setGlobalLoading(false);
-    }
-  }, [setToken, email, password]);
+    },
+    [setToken],
+  );
 
   return (
-    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps={'handled'}>
       <Text style={styles.label}>Create Account</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        returnKeyType="go"
-        onSubmitEditing={onSignUp}
-      />
-      <TouchableOpacity onPress={onSignUp} style={styles.btn}>
+      <FormProvider {...methods}>
+        <TextInput
+          name="email"
+          style={styles.input}
+          placeholder="Enter email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TextInput
+          name="password"
+          style={styles.input}
+          placeholder="Enter password"
+          secureTextEntry
+          returnKeyType="go"
+          onSubmitEditing={methods.handleSubmit(onSubmit)}
+        />
+      </FormProvider>
+      <TouchableOpacity
+        onPress={methods.handleSubmit(onSubmit)}
+        style={styles.btn}>
         <Text style={styles.btnText}>SignUp</Text>
       </TouchableOpacity>
       <View style={styles.rowSignUp}>
@@ -88,6 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 100,
     gap: 20,
+    paddingHorizontal: 20,
   },
   label: {
     textAlign: 'center',
@@ -99,7 +120,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     height: 48,
     borderRadius: 8,
-    marginHorizontal: 20,
     paddingHorizontal: 20,
     fontSize: 16,
   },
@@ -109,7 +129,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'stretch',
     alignItems: 'center',
-    marginHorizontal: 20,
     borderRadius: 8,
   },
   btnText: {

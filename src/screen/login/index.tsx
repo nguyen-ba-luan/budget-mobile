@@ -1,48 +1,64 @@
-import {
-  Button,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useCallback, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useCallback} from 'react';
 import {supabase} from '../../../App';
 import {useRootStore} from '../../store';
 import {Alert} from 'react-native';
 import {AuthParamList} from '../../navigation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import {yupResolver} from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import {FormProvider, useForm} from 'react-hook-form';
+import {TextInput} from '../../component';
+
+const schema = yup
+  .object({
+    email: yup.string().required().email(),
+    password: yup.string().required().min(6),
+  })
+  .required();
+
+type FormValues = {
+  email: string;
+  password: string;
+};
 
 const Login = ({
   navigation,
 }: NativeStackScreenProps<AuthParamList, 'Login'>) => {
-  const [email, setEmail] = useState(__DEV__ ? 'rotationba@gmail.com' : '');
-  const [password, setPassword] = useState(__DEV__ ? 'abcd1234' : '');
+  const {...methods} = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      email: __DEV__ ? 'rotationba@gmail.com' : '',
+      password: __DEV__ ? 'abcd1234' : '',
+    },
+  });
 
   const {setToken, setGlobalLoading} = useRootStore();
 
-  const onLogin = useCallback(async () => {
-    try {
-      setGlobalLoading(true);
-      const res = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+  const onSubmit = useCallback(
+    async ({email, password}: FormValues) => {
+      try {
+        setGlobalLoading(true);
+        const res = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      if (res.data?.session?.access_token) {
-        setToken(res.data?.session?.access_token);
-        return;
+        if (res.data?.session?.access_token) {
+          setToken(res.data?.session?.access_token);
+          return;
+        }
+
+        Alert.alert(res.error?.name || 'Error', res.error?.message);
+      } catch (error) {
+        Alert.alert('Error', JSON.stringify(error));
+      } finally {
+        setGlobalLoading(false);
       }
-
-      Alert.alert(res.error?.name || 'Error', res.error?.message);
-    } catch (error) {
-      Alert.alert('Error', JSON.stringify(error));
-    } finally {
-      setGlobalLoading(false);
-    }
-  }, [setToken, email, password]);
+    },
+    [setToken],
+  );
 
   const onSignUp = useCallback(() => {
     navigation.navigate('SignUp');
@@ -50,27 +66,31 @@ const Login = ({
 
   return (
     <KeyboardAwareScrollView
+      keyboardShouldPersistTaps={'handled'}
       contentContainerStyle={styles.container}
       enableAutomaticScroll>
       <Text style={styles.label}>Budget</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        returnKeyType="go"
-        onSubmitEditing={onLogin}
-      />
-      <TouchableOpacity onPress={onLogin} style={styles.btn}>
+      <FormProvider {...methods}>
+        <TextInput
+          name="email"
+          style={styles.input}
+          placeholder="Enter email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+
+        <TextInput
+          name="password"
+          style={styles.input}
+          placeholder="Enter password"
+          secureTextEntry
+          returnKeyType="go"
+          onSubmitEditing={methods.handleSubmit(onSubmit)}
+        />
+      </FormProvider>
+      <TouchableOpacity
+        onPress={methods.handleSubmit(onSubmit)}
+        style={styles.btn}>
         <Text style={styles.btnText}>Login</Text>
       </TouchableOpacity>
       <View style={styles.rowSignUp}>
@@ -94,6 +114,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 20,
     paddingTop: 100,
+    paddingHorizontal: 20,
   },
   label: {
     textAlign: 'center',
@@ -105,7 +126,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     height: 48,
     borderRadius: 8,
-    marginHorizontal: 20,
     paddingHorizontal: 20,
     fontSize: 16,
   },
@@ -115,7 +135,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'stretch',
     alignItems: 'center',
-    marginHorizontal: 20,
     borderRadius: 8,
   },
   btnText: {
@@ -131,7 +150,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   notAccountYetText: {
-    marginHorizontal: 20,
     fontSize: 16,
   },
 });
