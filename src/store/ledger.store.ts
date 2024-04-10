@@ -1,8 +1,9 @@
 import {StateCreator} from 'zustand';
 import {ILedger, ILedgerCategory, ISubCategory} from '../constant';
-import {CategorySelector, StoreState, sliceResetFns} from '.';
+import {CategorySelector, StoreState} from '.';
 import {omit, uniq} from 'ramda';
 import {getApplicationData} from '../service/api';
+import {sliceResetFns} from './util';
 
 interface AddLedgerPayload extends ILedger {
   categoryJson: {

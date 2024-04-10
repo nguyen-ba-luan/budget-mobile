@@ -1,9 +1,18 @@
-import {Alert, Button, StyleSheet, Text, TextInput, View} from 'react-native';
+import {
+  Alert,
+  Button,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useCallback, useState} from 'react';
 import {supabase} from '../../../App';
 import {AuthParamList} from '../../navigation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useRootStore} from '../../store';
+import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 
 const SignUp = ({
   navigation,
@@ -20,7 +29,6 @@ const SignUp = ({
         email,
         password,
       });
-      console.log({res});
 
       if (res.error) {
         return Alert.alert(res.error?.name || 'Error', res.error?.message);
@@ -35,7 +43,7 @@ const SignUp = ({
   }, [setToken, email, password]);
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       <Text style={styles.label}>Create Account</Text>
       <TextInput
         style={styles.input}
@@ -43,6 +51,7 @@ const SignUp = ({
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
@@ -50,9 +59,23 @@ const SignUp = ({
         secureTextEntry
         value={password}
         onChangeText={setPassword}
+        returnKeyType="go"
+        onSubmitEditing={onSignUp}
       />
-      <Button title="SignUp" onPress={onSignUp} />
-    </View>
+      <TouchableOpacity onPress={onSignUp} style={styles.btn}>
+        <Text style={styles.btnText}>SignUp</Text>
+      </TouchableOpacity>
+      <View style={styles.rowSignUp}>
+        <Text style={styles.notAccountYetText}>
+          {'Already have an account?'}
+        </Text>
+        <TouchableOpacity
+          onPress={navigation.goBack}
+          style={[styles.btn, styles.btnSignUp]}>
+          <Text style={styles.btnText}>Login</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -78,6 +101,31 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginHorizontal: 20,
     paddingHorizontal: 20,
+    fontSize: 16,
+  },
+  btn: {
+    backgroundColor: 'royalblue',
+    height: 50,
+    justifyContent: 'center',
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    borderRadius: 8,
+  },
+  btnText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  btnSignUp: {
+    backgroundColor: 'salmon',
+  },
+  rowSignUp: {
+    alignSelf: 'stretch',
+    gap: 10,
+  },
+  notAccountYetText: {
+    marginHorizontal: 20,
     fontSize: 16,
   },
 });

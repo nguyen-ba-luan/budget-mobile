@@ -24,14 +24,6 @@ export type StoreState = LedgerState &
   AuthState &
   CommonState;
 
-export const sliceResetFns = new Set<() => void>();
-
-export const resetAllSlices = () => {
-  sliceResetFns.forEach(resetFn => {
-    resetFn();
-  });
-};
-
 export const useRootStore = create<StoreState>()(
   persist(
     (...a) => ({

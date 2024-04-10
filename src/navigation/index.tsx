@@ -6,6 +6,7 @@ import StatisticTransactionStack from './statistic-transaction.stack';
 import {useRootStore, AuthSelector} from '../store';
 import AuthStack from './auth.stack';
 import Profile from '../screen/profile';
+import TabBarIcon from './tab-bar-icon';
 
 export * from './type';
 
@@ -18,9 +19,12 @@ function AppNavigation() {
     <NavigationContainer>
       {logged ? (
         <Tab.Navigator
-          screenOptions={{
+          screenOptions={({route}) => ({
             headerShown: false,
-          }}>
+            tabBarIcon: tabBarProps => (
+              <TabBarIcon {...tabBarProps} route={route} />
+            ),
+          })}>
           <Tab.Screen name="HomeStack" component={HomeStack} />
           <Tab.Screen
             name="StatisticTransactionStack"

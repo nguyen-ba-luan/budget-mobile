@@ -1,10 +1,19 @@
-import {Button, StyleSheet, Text, TextInput, View} from 'react-native';
+import {
+  Button,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useCallback, useState} from 'react';
 import {supabase} from '../../../App';
 import {useRootStore} from '../../store';
 import {Alert} from 'react-native';
 import {AuthParamList} from '../../navigation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 
 const Login = ({
   navigation,
@@ -40,7 +49,9 @@ const Login = ({
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.container}
+      enableAutomaticScroll>
       <Text style={styles.label}>Budget</Text>
       <TextInput
         style={styles.input}
@@ -48,6 +59,7 @@ const Login = ({
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
@@ -55,10 +67,21 @@ const Login = ({
         secureTextEntry
         value={password}
         onChangeText={setPassword}
+        returnKeyType="go"
+        onSubmitEditing={onLogin}
       />
-      <Button title="Login" onPress={onLogin} />
-      <Button title="SignUp" onPress={onSignUp} />
-    </View>
+      <TouchableOpacity onPress={onLogin} style={styles.btn}>
+        <Text style={styles.btnText}>Login</Text>
+      </TouchableOpacity>
+      <View style={styles.rowSignUp}>
+        <Text style={styles.notAccountYetText}>{"Don't have an account?"}</Text>
+        <TouchableOpacity
+          onPress={onSignUp}
+          style={[styles.btn, styles.btnSignUp]}>
+          <Text style={styles.btnText}>Register</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -66,11 +89,11 @@ export default Login;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: 'white',
     alignItems: 'center',
-    paddingTop: 100,
     gap: 20,
+    paddingTop: 100,
   },
   label: {
     textAlign: 'center',
@@ -84,6 +107,31 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginHorizontal: 20,
     paddingHorizontal: 20,
+    fontSize: 16,
+  },
+  btn: {
+    backgroundColor: 'royalblue',
+    height: 50,
+    justifyContent: 'center',
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    borderRadius: 8,
+  },
+  btnText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  btnSignUp: {
+    backgroundColor: 'salmon',
+  },
+  rowSignUp: {
+    alignSelf: 'stretch',
+    gap: 10,
+  },
+  notAccountYetText: {
+    marginHorizontal: 20,
     fontSize: 16,
   },
 });

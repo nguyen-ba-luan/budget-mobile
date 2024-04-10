@@ -1,7 +1,8 @@
 import {Alert, Button, StyleSheet, View} from 'react-native';
 import React, {useCallback} from 'react';
 import {supabase} from '../../../App';
-import {resetAllSlices, useRootStore} from '../../store';
+import {useRootStore} from '../../store';
+import {resetAllSlices} from '../../store/util';
 
 const Profile = () => {
   const {setToken, setGlobalLoading} = useRootStore();
