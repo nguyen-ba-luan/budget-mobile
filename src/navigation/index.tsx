@@ -24,11 +24,25 @@ function AppNavigation() {
             tabBarIcon: tabBarProps => (
               <TabBarIcon {...tabBarProps} route={route} />
             ),
+            tabBarActiveTintColor: 'slateblue',
+            tabBarLabelStyle: {
+              fontSize: 14,
+              fontWeight: '500',
+            },
           })}>
-          <Tab.Screen name="HomeStack" component={HomeStack} />
+          <Tab.Screen
+            name="HomeStack"
+            component={HomeStack}
+            options={{
+              title: 'Home',
+            }}
+          />
           <Tab.Screen
             name="StatisticTransactionStack"
             component={StatisticTransactionStack}
+            options={{
+              title: 'Transactions',
+            }}
           />
           <Tab.Screen name="Profile" component={Profile} />
         </Tab.Navigator>

@@ -1,6 +1,5 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
-import {BottomTabNavigationOptions} from '@react-navigation/bottom-tabs';
+import React, {memo} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {ParamListBase, RouteProp} from '@react-navigation/native';
 
@@ -12,25 +11,24 @@ interface IProps {
 }
 
 const TabBarIcon = ({color, focused, size, route}: IProps) => {
-  let iconName: string = '';
+  let iconName: string = 'account';
 
-  if (route.name === 'Home') {
-    iconName = focused
-      ? 'ios-information-circle'
-      : 'ios-information-circle-outline';
-  } else if (route.name === 'Settings') {
-    iconName = focused ? 'ios-list' : 'ios-list-outline';
+  switch (route.name) {
+    case 'HomeStack':
+      iconName = focused ? 'store' : 'store-outline';
+      break;
+    case 'StatisticTransactionStack':
+      iconName = focused ? 'bank-transfer' : 'bank-transfer';
+      break;
+
+    default:
+      iconName = focused ? 'account' : 'account-outline';
+      break;
   }
 
-  // You can return any component that you like here!
-  return <Icon name={iconName} size={size} color={color} />;
-  return (
-    <View>
-      <Text>TabBarIcon</Text>
-    </View>
-  );
+  return <Icon name={iconName} size={30} color={color} />;
 };
 
-export default TabBarIcon;
+export default memo(TabBarIcon);
 
 const styles = StyleSheet.create({});
