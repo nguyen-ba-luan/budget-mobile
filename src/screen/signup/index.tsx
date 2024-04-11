@@ -1,5 +1,5 @@
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback} from 'react';
 import {supabase} from '../../../App';
 import {AuthParamList} from '../../navigation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -33,7 +33,7 @@ const SignUp = ({
     },
     shouldFocusError: true,
   });
-  const {setToken, setGlobalLoading} = useRootStore();
+  const {setGlobalLoading} = useRootStore();
 
   const onSubmit = useCallback(
     async ({email, password}: FormValues) => {
@@ -55,7 +55,7 @@ const SignUp = ({
         setGlobalLoading(false);
       }
     },
-    [setToken],
+    [navigation, setGlobalLoading],
   );
 
   return (

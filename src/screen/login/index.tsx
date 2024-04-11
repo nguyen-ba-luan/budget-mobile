@@ -57,7 +57,7 @@ const Login = ({
         setGlobalLoading(false);
       }
     },
-    [setToken],
+    [setGlobalLoading, setToken],
   );
 
   const onSignUp = useCallback(() => {

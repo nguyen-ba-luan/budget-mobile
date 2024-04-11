@@ -40,12 +40,12 @@ const Header = () => {
 
   const onSelectLedger = useCallback(
     (id: number) => () => {
+      onToggleModal();
       if (selectedLedger?.id === id) {
         return;
       }
 
       selectLedger(id);
-      onToggleModal();
     },
     [onToggleModal, selectLedger, selectedLedger?.id],
   );

@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     gap: 20,
     paddingBottom: 20,
+    paddingTop: 10,
   },
   itemContainer: {
     backgroundColor: 'white',
