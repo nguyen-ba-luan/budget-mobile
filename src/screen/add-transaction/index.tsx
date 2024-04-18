@@ -27,6 +27,7 @@ const AddTransaction = () => {
       />
       <MoreAction
         time={state.time}
+        note={state.note}
         onChangeTime={handlers.ON_CHANGE_TIME}
         onAddNote={handlers.ON_ADD_NOTE}
       />

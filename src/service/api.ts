@@ -10,6 +10,9 @@ import {
   PeriodType,
 } from '../constant';
 import {isNilOrEmpty} from 'ramda-adjunct';
+import {insertObjectIf} from '../util';
+import {isNotNil} from 'ramda';
+import dayjs from 'dayjs';
 
 export const getApplicationData = async () => {
   const ledgerIdList: number[] = [];
@@ -97,7 +100,7 @@ export const getApplicationData = async () => {
             type: transaction?.type as LedgerCategoryType,
             categoryId: transaction?.category_id,
             subCategoryId: transaction?.sub_category_id,
-            time: transaction?.time!,
+            time: dayjs(transaction?.time!).toISOString(),
             note: transaction?.note!,
           },
         };
@@ -152,6 +155,39 @@ export const addTransaction = async (transaction: Omit<ITransaction, 'id'>) => {
         user_id: (await supabase?.auth.getUser()).data?.user?.id!,
         note: transaction?.note!,
       })
+      .select();
+
+    if (error) {
+      return Alert.alert(error?.code || 'Error', error?.message);
+    }
+
+    return data?.[0]?.id;
+  } catch (error) {
+    Alert.alert('Error', JSON.stringify(error));
+  }
+};
+export const updateTransaction = async (transaction: {
+  id: number;
+  note?: string;
+  cost?: number;
+  time?: string;
+}) => {
+  try {
+    const {error, data} = await supabase
+      .from('transactions')
+      .update({
+        ...insertObjectIf(isNotNil(transaction?.note), {
+          note: transaction?.note,
+        }),
+        ...insertObjectIf(isNotNil(transaction?.cost), {
+          cost: transaction?.cost,
+        }),
+        ...insertObjectIf(isNotNil(transaction?.time), {
+          time: transaction?.time,
+        }),
+        updated_at: dayjs().toISOString(),
+      })
+      .eq('id', transaction?.id)
       .select();
 
     if (error) {
@@ -251,6 +287,7 @@ export const updateCategory = async (
           period: category?.budget?.period,
           start_date: category?.budget?.startDate,
           budget_cycle: category?.budget?.budgetCycle,
+          updated_at: dayjs().toISOString(),
         })
         .eq('id', category?.budget?.id!)
         .select();
@@ -264,6 +301,7 @@ export const updateCategory = async (
         color: category?.color,
         type: category?.type,
         budget_id: budgetId,
+        updated_at: dayjs().toISOString(),
       })
       .eq('id', category?.id!)
       .select();
@@ -362,6 +400,7 @@ export const updateSubCategory = async (subCategory: ISubCategory) => {
       .from('sub_categories')
       .update({
         name: subCategory?.name,
+        updated_at: dayjs().toISOString(),
       })
       .eq('id', subCategory?.id!)
       .select();
@@ -439,6 +478,7 @@ export const updateLedger = async (ledger: Omit<ILedger, 'categoryIdList'>) => {
         color: ledger.color,
         currency_id: ledger?.currency?.id,
         icon: ledger?.icon,
+        updated_at: dayjs().toISOString(),
       })
       .eq('id', ledger?.id)
       .select();

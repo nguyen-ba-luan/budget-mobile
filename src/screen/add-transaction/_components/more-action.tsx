@@ -7,11 +7,12 @@ import dayjs from 'dayjs';
 interface IProps {
   onAddNote(): void;
   time: string;
+  note: string;
   onChangeTime(time: string): void;
 }
 
 const MoreAction = (props: IProps) => {
-  const {onAddNote, onChangeTime, time} = props;
+  const {onAddNote, onChangeTime, time, note} = props;
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   const hideDatePicker = useCallback(() => {
@@ -27,7 +28,7 @@ const MoreAction = (props: IProps) => {
       onChangeTime(date.toISOString());
       hideDatePicker();
     },
-    [onChangeTime],
+    [hideDatePicker, onChangeTime],
   );
 
   const isSameToday = useMemo(() => dayjs(time).isSame(dayjs(), 'day'), [time]);
@@ -38,8 +39,14 @@ const MoreAction = (props: IProps) => {
         style={styles.subItem}
         activeOpacity={0.8}
         onPress={onAddNote}>
-        <Icon name="filetext1" color={'slateblue'} size={18} />
-        <Text style={styles.subText}>{'Note'}</Text>
+        {Boolean(note) ? (
+          <Text style={styles.subText}>{note}</Text>
+        ) : (
+          <>
+            <Icon name="filetext1" color={'slateblue'} size={18} />
+            <Text style={styles.subText}>{'Note'}</Text>
+          </>
+        )}
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.subItem}

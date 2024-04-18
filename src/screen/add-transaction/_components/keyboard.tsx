@@ -1,4 +1,11 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import React, {memo, useCallback} from 'react';
 import {Metrics} from '../../../theme/metric';
 import {IKeyCap, keyCapList} from '../../../constant';
@@ -6,10 +13,11 @@ import Icon from 'react-native-vector-icons/Feather';
 
 interface IProps {
   onPressKeyCap(keyCap: IKeyCap): void;
+  containerStyle?: StyleProp<ViewStyle>;
 }
 
 const Keyboard = (props: IProps) => {
-  const {onPressKeyCap} = props;
+  const {onPressKeyCap, containerStyle} = props;
 
   const onPressItem = useCallback(
     (keyCap: IKeyCap) => () => {
@@ -19,7 +27,7 @@ const Keyboard = (props: IProps) => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       {keyCapList?.map((keyCap, index) => {
         return (
           <TouchableOpacity

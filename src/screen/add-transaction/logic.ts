@@ -47,10 +47,12 @@ export const useAddTransactionLogic = () => {
     },
     ON_ADD_MORE_SUB_CATEGORY: () => {
       inputRef.current?.focus();
+      inputRef.current?.setNativeProps({text: ''});
       setState({inputType: InputType.SUB_CATEGORY});
     },
     ON_ADD_NOTE: () => {
       inputRef.current?.focus();
+      inputRef.current?.setNativeProps({text: state.note});
       setState({inputType: InputType.NOTE});
     },
     ON_CHANGE_INPUT: (text: string) => {
@@ -58,7 +60,7 @@ export const useAddTransactionLogic = () => {
     },
     ON_SUBMIT_EDITING: () => {
       inputRef.current?.clear();
-
+      inputValueRef.current = inputValueRef.current?.trim();
       if (state.inputType === InputType.NOTE) {
         setState({note: inputValueRef.current});
 
@@ -104,7 +106,7 @@ export const useAddTransactionLogic = () => {
         categoryId,
         ledgerId,
         cost: state.cost,
-        note: state.note,
+        note: state.note?.trim(),
         subCategoryId: state.selectedSubCategoryId!,
         time: state.time,
         type: category?.type,

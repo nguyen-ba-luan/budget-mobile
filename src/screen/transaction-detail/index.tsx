@@ -1,8 +1,10 @@
 import {
   Alert,
-  ScrollView,
+  NativeSyntheticEvent,
   StyleSheet,
   Text,
+  TextInput,
+  TextInputSubmitEditingEventData,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -12,10 +14,15 @@ import {StatisticTransactionParamList} from '../../navigation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CategorySelector, TransactionSelector, useRootStore} from '../../store';
 import {formatDate, formatNumber} from '../../util';
-import {LedgerCategoryType} from '../../constant';
+import {IKeyCap, KeyCapType, LedgerCategoryType} from '../../constant';
 import {SubCategorySelector} from '../../store/sub-category.store';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {deleteTransaction} from '../../service/api';
+import {deleteTransaction, updateTransaction} from '../../service/api';
+import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import dayjs from 'dayjs';
+import {Keyboard} from '../add-transaction/_components';
+import useMergingState from '../../hook/useMergingState';
 
 const TransactionDetail = ({
   navigation,
@@ -35,7 +42,51 @@ const TransactionDetail = ({
   const subCategory = useRootStore(
     SubCategorySelector.selectSubCategoryById(transaction.subCategoryId),
   );
+
+  const [state, setState] = useMergingState({
+    isDatePickerVisible: false,
+    cost: transaction?.cost,
+    showKeyboard: false,
+  });
+
+  const hideDatePicker = useCallback(() => {
+    setState({isDatePickerVisible: false});
+  }, []);
+
   const {setGlobalLoading, fetchApplicationData} = useRootStore();
+
+  const openDatePicker = useCallback(() => {
+    setState({isDatePickerVisible: true});
+  }, []);
+
+  const onShowKeyboard = useCallback(() => {
+    setState({showKeyboard: true});
+  }, []);
+
+  const onHideKeyboard = useCallback(() => {
+    setState({showKeyboard: false});
+  }, []);
+
+  const handleConfirm = useCallback(
+    async (date: Date) => {
+      hideDatePicker();
+      const newTime = date.toISOString();
+
+      if (newTime === transaction.time) return;
+
+      try {
+        await updateTransaction({
+          id: transaction?.id,
+          time: newTime,
+        });
+
+        fetchApplicationData();
+      } finally {
+        setGlobalLoading(false);
+      }
+    },
+    [hideDatePicker, transaction],
+  );
 
   const isExpenses = transaction.type === LedgerCategoryType.EXPENSES;
 
@@ -63,17 +114,81 @@ const TransactionDetail = ({
     ]);
   }, [transactionId]);
 
+  const onSubmitEditingNote = async (
+    e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
+  ) => {
+    try {
+      const newNote = e.nativeEvent.text?.trim();
+
+      if (newNote === transaction.note) return;
+      setGlobalLoading(true);
+
+      await updateTransaction({
+        id: transaction?.id,
+        note: newNote,
+      });
+
+      fetchApplicationData();
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
+  const onPressKeyCap = async (keyCap: IKeyCap) => {
+    if (keyCap.type === KeyCapType.SUBMIT) {
+      onHideKeyboard();
+      const newCost = state.cost;
+
+      if (newCost === transaction.cost) return;
+
+      try {
+        setGlobalLoading(true);
+
+        await updateTransaction({
+          id: transaction?.id,
+          cost: newCost,
+        });
+
+        fetchApplicationData();
+      } finally {
+        setGlobalLoading(false);
+      }
+    }
+
+    if (keyCap.type === KeyCapType.NUMBER) {
+      setState({
+        cost: Number(String(state.cost) + String(keyCap.label)),
+      });
+    }
+
+    if (keyCap.type === KeyCapType.DELETE) {
+      setState({
+        cost: Math.floor(state.cost / 10),
+      });
+    }
+  };
+
+  const onPressBackdrop = () => {
+    onHideKeyboard();
+    setState({cost: transaction?.cost});
+  };
+
   return (
     <View style={styles.container}>
       <Header />
-      <View style={styles.wrapperCost}>
+      <TouchableOpacity
+        style={[
+          styles.wrapperCost,
+          state.showKeyboard && styles.wrapperCostActive,
+        ]}
+        onPress={onShowKeyboard}>
         <Text
           style={[
             styles.costText,
             {color: isExpenses ? 'tomato' : 'seagreen'},
-          ]}>{`₫${formatNumber(transaction.cost)}`}</Text>
-      </View>
-      <ScrollView contentContainerStyle={styles.scrollView}>
+          ]}>{`₫${formatNumber(state.cost)}`}</Text>
+      </TouchableOpacity>
+      <KeyboardAwareScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.rowItem}>
           <Text style={styles.label}>Type</Text>
           <View>
@@ -94,15 +209,21 @@ const TransactionDetail = ({
         </View>
         <View style={styles.rowItem}>
           <Text style={styles.label}>Time</Text>
-          <View>
+          <TouchableOpacity style={styles.enablePress} onPress={openDatePicker}>
             <Text>
               {formatDate(transaction.time, 'DD MMM YYYY [at] hh:mm')}
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.rowItem}>
           <Text style={styles.label}>Note</Text>
-          <Text>{transaction.note || 'None'}</Text>
+          <TextInput
+            style={styles.noteInput}
+            placeholder="None"
+            defaultValue={transaction.note}
+            returnKeyType="done"
+            onSubmitEditing={onSubmitEditingNote}
+          />
         </View>
         <TouchableOpacity
           activeOpacity={0.8}
@@ -110,7 +231,25 @@ const TransactionDetail = ({
           onPress={onDelete}>
           <FontAwesome name={'trash'} color={'salmon'} size={30} />
         </TouchableOpacity>
-      </ScrollView>
+      </KeyboardAwareScrollView>
+      <DateTimePickerModal
+        isVisible={state.isDatePickerVisible}
+        mode="datetime"
+        onConfirm={handleConfirm}
+        onCancel={hideDatePicker}
+        display="inline"
+        date={dayjs(transaction.time).toDate()}
+      />
+      {state.showKeyboard && (
+        <TouchableOpacity
+          style={styles.wrapperKeyboard}
+          onPress={onPressBackdrop}>
+          <Keyboard
+            containerStyle={styles.keyboard}
+            onPressKeyCap={onPressKeyCap}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -130,6 +269,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginVertical: 30,
   },
+  wrapperCostActive: {
+    backgroundColor: 'gold',
+  },
   costText: {
     fontWeight: 'bold',
     fontSize: 30,
@@ -143,6 +285,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
+    gap: 10,
   },
   label: {
     fontSize: 18,
@@ -157,5 +300,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     marginTop: 20,
+  },
+  noteInput: {
+    backgroundColor: 'whitesmoke',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 4,
+    maxWidth: '80%',
+  },
+  enablePress: {
+    backgroundColor: 'whitesmoke',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 4,
+  },
+  wrapperKeyboard: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'transparent',
+    justifyContent: 'flex-end',
+  },
+  keyboard: {
+    marginBottom: 0,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+    paddingTop: 10,
   },
 });

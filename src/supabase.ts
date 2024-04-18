@@ -279,7 +279,7 @@ export type Database = {
           note?: string | null;
           sub_category_id?: number;
           type?: string;
-          time: string | null;
+          time?: string | null;
           updated_at?: string;
           user_id?: string;
         };
