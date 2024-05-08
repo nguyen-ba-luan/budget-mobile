@@ -15,6 +15,7 @@ import {Database} from './src/supabase';
 import {View} from 'react-native';
 import {useRootStore} from './src/store';
 import {CommonSelector} from './src/store/common.store';
+import {ThemeProvider} from './src/hook';
 
 const supabaseUrl = 'https://teplpgfdefrpawmktqxa.supabase.co';
 const supabaseAnonKey =
@@ -38,18 +39,20 @@ function App(): React.JSX.Element {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <AppNavigation />
-      {loading && (
-        <View style={styles.loading}>
-          <ActivityIndicator animating={true} color={'white'} />
-        </View>
-      )}
-    </SafeAreaView>
+    <ThemeProvider>
+      <SafeAreaView style={backgroundStyle}>
+        <StatusBar
+          barStyle={'dark-content'}
+          backgroundColor={backgroundStyle.backgroundColor}
+        />
+        <AppNavigation />
+        {loading && (
+          <View style={styles.loading}>
+            <ActivityIndicator animating={true} color={'white'} />
+          </View>
+        )}
+      </SafeAreaView>
+    </ThemeProvider>
   );
 }
 

@@ -23,6 +23,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import dayjs from 'dayjs';
 import {Keyboard} from '../add-transaction/_components';
 import useMergingState from '../../hook/useMergingState';
+import {ThemedStyleDefinitions, useThemedStyles} from '../../hook';
 
 const TransactionDetail = ({
   navigation,
@@ -31,6 +32,8 @@ const TransactionDetail = ({
   StatisticTransactionParamList,
   'TransactionDetail'
 >) => {
+  const styles = useThemedStyles(styleJson);
+
   const transactionId = route.params.transactionId;
   const transaction = useRootStore(
     TransactionSelector.selectTransactionById(transactionId),
@@ -256,7 +259,7 @@ const TransactionDetail = ({
 
 export default TransactionDetail;
 
-const styles = StyleSheet.create({
+const styleJson: ThemedStyleDefinitions<any> = {
   container: {
     flex: 1,
     backgroundColor: 'white',
@@ -331,4 +334,4 @@ const styles = StyleSheet.create({
     elevation: 3,
     paddingTop: 10,
   },
-});
+};
