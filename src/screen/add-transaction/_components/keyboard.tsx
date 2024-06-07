@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   StyleProp,
   StyleSheet,
   Text,
@@ -8,8 +9,9 @@ import {
 } from 'react-native';
 import React, {memo, useCallback} from 'react';
 import {Metrics} from '../../../theme/metric';
-import {IKeyCap, keyCapList} from '../../../constant';
+import {IKeyCap, KeyCapType, keyCapList} from '../../../constant';
 import Icon from 'react-native-vector-icons/Feather';
+import {CommonSelector, useRootStore} from '../../../store';
 
 interface IProps {
   onPressKeyCap(keyCap: IKeyCap): void;
@@ -18,6 +20,7 @@ interface IProps {
 
 const Keyboard = (props: IProps) => {
   const {onPressKeyCap, containerStyle} = props;
+  const globalLoading = useRootStore(CommonSelector.selectGlobalLoading);
 
   const onPressItem = useCallback(
     (keyCap: IKeyCap) => () => {
@@ -39,7 +42,13 @@ const Keyboard = (props: IProps) => {
             activeOpacity={0.8}
             onPress={onPressItem(keyCap)}>
             {!!keyCap?.icon ? (
-              <Icon name={keyCap.icon} size={26} color={'slateblue'} />
+              <>
+                {keyCap.type === KeyCapType.SUBMIT && globalLoading ? (
+                  <ActivityIndicator style={{height: 26}} />
+                ) : (
+                  <Icon name={keyCap.icon} size={26} color={'slateblue'} />
+                )}
+              </>
             ) : (
               <Text style={styles.textKeyCap}>{keyCap.label}</Text>
             )}

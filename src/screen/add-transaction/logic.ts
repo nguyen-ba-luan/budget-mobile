@@ -30,7 +30,8 @@ export const useAddTransactionLogic = () => {
     inputType: '' as InputType,
   });
 
-  const {addSubCategory, fetchApplicationData} = useRootStore();
+  const {addSubCategory, fetchApplicationData, setGlobalLoading} =
+    useRootStore();
   const category = useRootStore(
     CategorySelector.selectLedgerCategory(categoryId),
   );
@@ -102,17 +103,24 @@ export const useAddTransactionLogic = () => {
         return;
       }
 
-      await addTransaction({
-        categoryId,
-        ledgerId,
-        cost: state.cost,
-        note: state.note?.trim(),
-        subCategoryId: state.selectedSubCategoryId!,
-        time: state.time,
-        type: category?.type,
-      });
-      fetchApplicationData();
-      navigation.goBack();
+      try {
+        setGlobalLoading(true);
+
+        await addTransaction({
+          categoryId,
+          ledgerId,
+          cost: state.cost,
+          note: state.note?.trim(),
+          subCategoryId: state.selectedSubCategoryId!,
+          time: state.time,
+          type: category?.type,
+        });
+        fetchApplicationData();
+        setGlobalLoading(false);
+        navigation.goBack();
+      } catch (error) {
+        setGlobalLoading(false);
+      }
     },
   };
 

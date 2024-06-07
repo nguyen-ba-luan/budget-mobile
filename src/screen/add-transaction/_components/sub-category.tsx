@@ -1,4 +1,10 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {memo, useCallback} from 'react';
 import {CategorySelector, useRootStore} from '../../../store';
 import {RouteProp, useRoute} from '@react-navigation/native';
@@ -29,28 +35,30 @@ const SubCategory = (props: IProps) => {
   );
 
   return (
-    <View style={styles.container}>
-      {selectedCategory?.subCategoryList?.map(item => {
-        const selected = selectedSubCategoryId === item?.id;
+    <View style={{maxHeight: 94}}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {selectedCategory?.subCategoryList?.map(item => {
+          const selected = selectedSubCategoryId === item?.id;
 
-        return (
-          <TouchableOpacity
-            key={item?.id}
-            style={[styles.subItem, selected && styles.subItemActive]}
-            activeOpacity={0.8}
-            onPress={onPress(item?.id)}>
-            <Text style={[styles.subText, selected && styles.subTextActive]}>
-              {item?.name}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
-      <TouchableOpacity
-        style={styles.subItem}
-        activeOpacity={0.8}
-        onPress={onAddMore}>
-        <Icon name="plus" style={styles.subText} />
-      </TouchableOpacity>
+          return (
+            <TouchableOpacity
+              key={item?.id}
+              style={[styles.subItem, selected && styles.subItemActive]}
+              activeOpacity={0.8}
+              onPress={onPress(item?.id!)}>
+              <Text style={[styles.subText, selected && styles.subTextActive]}>
+                {item?.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+        <TouchableOpacity
+          style={styles.subItem}
+          activeOpacity={0.8}
+          onPress={onAddMore}>
+          <Icon name="plus" style={styles.subText} />
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
@@ -65,6 +73,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     gap: 5,
     flexWrap: 'wrap',
+    flexGrow: 1,
   },
   subItem: {
     backgroundColor: 'whitesmoke',
