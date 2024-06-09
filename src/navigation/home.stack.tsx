@@ -9,6 +9,8 @@ import AddBudget from '../screen/add-budget';
 import DateFilter from '../screen/date-filter';
 import ChooseIcon from '../screen/choose-icon';
 import {RootStackParamList} from './type';
+import TransactionList from '../screen/transaction-list';
+import TransactionDetail from '../screen/transaction-detail';
 
 export * from './type';
 
@@ -27,6 +29,13 @@ function HomeStack() {
         }}
         name="AddTransaction"
         component={AddTransaction}
+      />
+      <Stack.Screen
+        options={{
+          presentation: 'formSheet',
+        }}
+        name="TransactionList"
+        component={TransactionList}
       />
       <Stack.Screen name="AddLedger" component={AddLedger} />
       <Stack.Screen
@@ -66,6 +75,13 @@ function HomeStack() {
         }}
         name="DateFilter"
         component={DateFilter}
+      />
+      <Stack.Screen
+        name="TransactionDetail"
+        component={TransactionDetail}
+        options={{
+          presentation: 'formSheet',
+        }}
       />
     </Stack.Navigator>
   );

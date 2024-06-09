@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {memo} from 'react';
+import React, {memo, useCallback} from 'react';
 import {CategorySelector, useRootStore} from '../../../store';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
@@ -17,6 +17,12 @@ const Header = () => {
     CategorySelector.selectLedgerCategory(categoryId),
   );
 
+  const onTransactionList = useCallback(() => {
+    navigation.navigate('TransactionList', {
+      categoryId,
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -26,6 +32,12 @@ const Header = () => {
         <Icon name={'close'} size={22} color={'black'} />
       </TouchableOpacity>
       <Text style={styles.title}>{selectedCategory?.name || 'Category'}</Text>
+      <TouchableOpacity
+        style={styles.btnList}
+        onPress={onTransactionList}
+        activeOpacity={0.8}>
+        <Icon name={'bars'} size={22} color={'mediumseagreen'} />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -41,6 +53,10 @@ const styles = StyleSheet.create({
   closeBtn: {
     position: 'absolute',
     left: 10,
+  },
+  btnList: {
+    position: 'absolute',
+    right: 10,
   },
   title: {
     fontSize: 20,

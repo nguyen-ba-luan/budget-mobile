@@ -40,6 +40,12 @@ export type RootStackParamList = {
   DateFilter: {
     previousScreen: string;
   };
+  TransactionList: {
+    categoryId: number;
+  };
+  TransactionDetail: {
+    transactionId: number;
+  };
 };
 
 export type StatisticTransactionParamList = {
